@@ -5,9 +5,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private const float ACCELERATION = 12f;
+
+    [SerializeField] private Animator animator;
+
     private Rigidbody myRigidbody;
-    public Animator animator;
     private InputManager playerInput;
+    private float moveAnimationSpeedTarget;
+    private float currentMoveX;
 
     public float walkingSpeed;
     public float rotationSpeed;
@@ -26,18 +31,7 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput()
     {
-        //walkingChange = Vector3.zero;
-
-
-
         walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
-
-        
-        //Debug.Log(walkingChange);
-        /*if (this.playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOT))
-        {
-            // Handle shooting logic here
-        }*/
     }
 
     private void FixedUpdate()
@@ -48,27 +42,16 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateMovement()
     {
-        if (walkingChange != Vector3.zero)
-        {
-            animator.SetBool("idle", false);
-            animator.SetBool("walking", true);
-        }
-        else
-        {
-            animator.SetBool("walking", false);
-            animator.SetBool("idle", true);
-        }
-
-        walkingChange = Vector3.ClampMagnitude(walkingChange, 1f);
-        Vector3 movement = walkingChange * walkingSpeed * Time.fixedDeltaTime;
-
-        // Add movement to the current position
+        currentMoveX = Mathf.Lerp(currentMoveX, walkingChange.x, Time.deltaTime * ACCELERATION);
+        Vector3 movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed * Time.fixedDeltaTime;
+        moveAnimationSpeedTarget = Mathf.Lerp(moveAnimationSpeedTarget, walkingChange.magnitude, Time.deltaTime * (ACCELERATION / 2));
+        animator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
         myRigidbody.MovePosition(myRigidbody.position + movement);
+        myRigidbody.velocity = Physics.gravity;
     }
 
     private void UpdateRotation()
     {
-
         float targetRotationY = walkingChange.x * 90f;
         if (targetRotationY != 0)
         {
