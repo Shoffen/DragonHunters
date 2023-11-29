@@ -50,7 +50,7 @@ ModelImporter:
       name: FemaleFitA_eyelash_diffuse
     second: {fileID: 2800000, guid: 1174e66154d8dae4fb3e6276c6f7bd1b, type: 3}
   materials:
-    materialImportMode: 2
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
