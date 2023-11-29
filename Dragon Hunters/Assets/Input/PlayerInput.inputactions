@@ -6,51 +6,74 @@
             "id": "c3549ce2-aa44-4009-9eca-37c870ab4d18",
             "actions": [
                 {
-                    "name": "Movement",
-                    "type": "Value",
-                    "id": "d929fea3-92e6-4a4b-8c94-19afb6cfd94c",
-                    "expectedControlType": "Vector2",
+                    "name": "move",
+                    "type": "Button",
+                    "id": "fc71b6bf-c965-4b94-82dc-bf8acebc6b3d",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
-                    "name": "AD",
-                    "id": "2bbee6c0-5e62-4251-a280-bda1a251f06f",
-                    "path": "2DVector",
-                    "interactions": "Hold",
+                    "name": "1D Axis",
+                    "id": "396c79a7-acaa-4b01-84ac-2aa44cda8584",
+                    "path": "1DAxis",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "left",
-                    "id": "b2a3b071-a8b1-4ee6-a838-878551f7d067",
-                    "path": "<Keyboard>/a",
+                    "name": "1D Axis",
+                    "id": "33d6f600-3aa7-453c-b519-ca03994d7769",
+                    "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "a7f72de7-1bb3-4dd7-9e03-c8fb95a6939b",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardFix",
+                    "action": "move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "right",
-                    "id": "ef3c6ea8-5007-45c7-aa4d-61d590b8a37c",
+                    "name": "positive",
+                    "id": "1d1efd34-ddec-4b19-98ea-907a179860f8",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Movement",
+                    "groups": "KeyboardFix",
+                    "action": "move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
             ]
         }
     ],
-    "controlSchemes": []
+    "controlSchemes": [
+        {
+            "name": "KeyboardFix",
+            "bindingGroup": "KeyboardFix",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
 }
