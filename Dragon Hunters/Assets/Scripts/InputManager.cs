@@ -41,7 +41,7 @@ public class InputManager : MonoBehaviour
             case AXIS.MOVE:
                 Vector2 local = Vector2.zero;
                 local = new Vector2(inputAction.ReadValue<float>(), 0);
-                Debug.Log(local);
+                //Debug.Log(local);
                 return local;
         }
        // Debug.Log(inputAction.ReadValue<Vector2>());
@@ -57,7 +57,7 @@ public class InputManager : MonoBehaviour
 
             if (inputAction.triggered)
             {
-                Debug.Log("Action Pressed: " + _action);
+                //Debug.Log("Action Pressed: " + _action);
                 return true;
             }
         }
