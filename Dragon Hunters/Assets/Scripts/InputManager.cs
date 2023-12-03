@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
     public enum PLAYER_ACTION
     {
         INTERACTION,
+        AIMING
         //SHOOT
     }
     public enum AXIS
@@ -52,8 +53,8 @@ public class InputManager : MonoBehaviour
     {
         if (actionMap != null)
         {
-            var actionName = _action.ToString().ToLower();
-            var inputAction = actionMap[actionName];
+            string actionName = _action.ToString().ToLower();
+            InputAction inputAction = actionMap[actionName];
 
             if (inputAction.triggered)
             {
