@@ -12,7 +12,29 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
+<<<<<<< Updated upstream
                     "initialStateCheck": true
+=======
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "aiming",
+                    "type": "Button",
+                    "id": "3e70d5de-50ed-4c84-8274-400b8ca5a3a0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "shooting",
+                    "type": "Button",
+                    "id": "ed4b80d0-642a-4031-b7cd-aa6959348249",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+>>>>>>> Stashed changes
                 }
             ],
             "bindings": [
@@ -48,6 +70,42 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+<<<<<<< Updated upstream
+=======
+                },
+                {
+                    "name": "",
+                    "id": "b93fdd01-a2e5-4bed-ac05-3e17fa1a675a",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardFix",
+                    "action": "aiming",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "5ebda931-efbf-413b-a225-ae91af977761",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "aiming",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2e743286-9d40-4b1c-9e60-50b92b766ac7",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardFix",
+                    "action": "shooting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+>>>>>>> Stashed changes
                 }
             ]
         }
