@@ -6,7 +6,8 @@ public class InputManager : MonoBehaviour
     public enum PLAYER_ACTION
     {
         INTERACTION,
-        AIMING
+        AIMING,
+        SHOOTING
         //SHOOT
     }
     public enum AXIS

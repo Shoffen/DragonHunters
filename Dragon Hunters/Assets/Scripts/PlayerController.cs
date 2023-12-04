@@ -15,9 +15,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private AnimationCurve aimPrepareCurve;
     [SerializeField] private MultiAimConstraint[] spineBones;
+    [SerializeField] private MultiAimConstraint shoulderBone;
 
     private Rigidbody myRigidbody;
     private InputManager playerInput;
+    public Bow bow;
     private float moveAnimationSpeedTarget;
     private float currentMoveX;
 
@@ -57,6 +59,7 @@ public class PlayerController : MonoBehaviour
         playerInput = GetComponent<InputManager>();
         SetAimingState(AIMING_STATE.IDLE, true);
         mainCamera = Camera.main;
+        
     }
 
     private void Update()
@@ -74,6 +77,7 @@ public class PlayerController : MonoBehaviour
             targetAimDelta = 0;
             weightStart = AIM_WEIGHT;
             weightTarget = IDLE_WEIGHT;
+            shoulderBone.weight = 0f;
             if (_isInstant)
             {
                 foreach (MultiAimConstraint constraint in spineBones)
@@ -87,6 +91,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            shoulderBone.weight = 0.3f;
             weightStart = IDLE_WEIGHT;
             weightTarget = AIM_WEIGHT;
             startAimDelta = 0;
@@ -142,12 +147,41 @@ public class PlayerController : MonoBehaviour
             if(aimingState == AIMING_STATE.IDLE)
             {
                 SetAimingState(AIMING_STATE.AIMING);
+                StartCoroutine(SetToLoad());
             }
             else
             {
                 SetAimingState(AIMING_STATE.IDLE);
+                animator.SetBool("Shooting", false);
             }
         }
+        /*if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOTING))
+        {
+            if (aimingState == AIMING_STATE.AIMING)
+            {
+                if (!(animator.GetBool("Shooting")))
+                {
+                    animator.Play("Shooting", 1, 0f);
+                    animator.SetBool("Shooting", true);
+                    bow.LoadBow();
+                    StartCoroutine(ResetAnimationCoroutine());
+                }
+            }
+          
+        }*/
+    }
+    private IEnumerator SetToLoad()
+    {
+        yield return new WaitForSeconds(1f/4);
+        animator.SetBool("Shooting", true);
+        bow.LoadBow();
+
+    }
+    private IEnumerator ResetAnimationCoroutine()
+    {
+        yield return new WaitForSeconds(1f / 2);
+        animator.SetBool("Shooting", false);
+
     }
 
     private void FixedUpdate()
@@ -181,7 +215,8 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateRotation()
     {
-       
-        myRigidbody.MoveRotation(Quaternion.Euler(new Vector3(0, 90 * Mathf.Sign(targetTransform.position.x - transform.position.x), 0)));
+        Quaternion target = Quaternion.Euler(new Vector3(0, 90 * Mathf.Sign(targetTransform.position.x - transform.position.x)));
+
+        myRigidbody.rotation = Quaternion.Lerp(myRigidbody.rotation, target, Time.deltaTime * rotationSpeed);
     }
 }

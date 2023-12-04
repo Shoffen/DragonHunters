@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "shooting",
+                    "type": "Button",
+                    "id": "13a4ad03-e4e5-4259-acba-68e14d049e44",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -70,8 +79,19 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "1D Axis",
+                    "id": "5ebda931-efbf-413b-a225-ae91af977761",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "aiming",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "",
-                    "id": "b93fdd01-a2e5-4bed-ac05-3e17fa1a675a",
+                    "id": "5d42daae-916d-4276-805b-a90be472d1d3",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
@@ -81,14 +101,14 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "1D Axis",
-                    "id": "5ebda931-efbf-413b-a225-ae91af977761",
-                    "path": "1DAxis",
+                    "name": "",
+                    "id": "e0fc5d00-91cb-4751-bc0c-b662e27b18c5",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "aiming",
-                    "isComposite": true,
+                    "groups": "KeyboardFix",
+                    "action": "shooting",
+                    "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
