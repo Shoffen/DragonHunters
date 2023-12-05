@@ -26,7 +26,8 @@ public class Bow : MonoBehaviour
     }
     public void LoadBow()
     {
-        bowAnimator.Play("Load");
+        bowAnimator.Play("StuckLoad", -1, 1.0f);
+        
         //bowAnimator.SetBool("Load", true);
         //StartCoroutine(ResetAnimationCoroutine());
     }

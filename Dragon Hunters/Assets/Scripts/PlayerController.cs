@@ -12,16 +12,19 @@ public class PlayerController : MonoBehaviour
     private const float AIM_WEIGHT = 0.5f;
     private const float IDLE_WEIGHT = 0.1f;
 
-    [SerializeField] private Animator animator;
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private Animator bowAnimator;
     [SerializeField] private AnimationCurve aimPrepareCurve;
     [SerializeField] private MultiAimConstraint[] spineBones;
     [SerializeField] private MultiAimConstraint shoulderBone;
+   
 
     private Rigidbody myRigidbody;
-    private InputManager playerInput;
     public Bow bow;
+    private InputManager playerInput;
     private float moveAnimationSpeedTarget;
     private float currentMoveX;
+    public Transform opa;
 
     public float walkingSpeed;
     public float rotationSpeed;
@@ -57,6 +60,7 @@ public class PlayerController : MonoBehaviour
     {
         myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<InputManager>();
+        
         SetAimingState(AIMING_STATE.IDLE, true);
         mainCamera = Camera.main;
         
@@ -85,7 +89,7 @@ public class PlayerController : MonoBehaviour
                     constraint.data.offset = new Vector3(0, 0, 0);
                     constraint.weight = IDLE_WEIGHT;
                 }
-                animator.SetLayerWeight(1, targetAimDelta);
+                playerAnimator.SetLayerWeight(1, targetAimDelta);
                 isAimStateChangeing = false;
             }
         }
@@ -98,7 +102,7 @@ public class PlayerController : MonoBehaviour
             targetAimDelta = 1;
             if (_isInstant)
             {
-                animator.SetLayerWeight(1, targetAimDelta);
+                playerAnimator.SetLayerWeight(1, targetAimDelta);
                 foreach (MultiAimConstraint constraint in spineBones)
                 {
                     constraint.data.offset = new Vector3(0, AIMING_Y_OFFSET_TARGET, 0);
@@ -114,7 +118,7 @@ public class PlayerController : MonoBehaviour
         if (isAimStateChangeing)
         {
             aimDeltaTime = Mathf.Clamp01(aimDeltaTime + Time.deltaTime * AIM_PREPARE_DURATION);
-            animator.SetLayerWeight(1, Mathf.Lerp(startAimDelta, targetAimDelta, aimPrepareCurve.Evaluate(aimDeltaTime)));
+            playerAnimator.SetLayerWeight(1, Mathf.Lerp(startAimDelta, targetAimDelta, aimPrepareCurve.Evaluate(aimDeltaTime)));
             float _yAxis = Mathf.Lerp(startAimDelta, targetAimDelta * AIMING_Y_OFFSET_TARGET, aimPrepareCurve.Evaluate(aimDeltaTime));
             foreach (MultiAimConstraint constraint in spineBones)
             {
@@ -146,44 +150,79 @@ public class PlayerController : MonoBehaviour
         {
             if(aimingState == AIMING_STATE.IDLE)
             {
+                
                 SetAimingState(AIMING_STATE.AIMING);
+                bowAnimator.SetBool("Unstuck", false);
+                bowAnimator.SetBool("Reset", false);
                 StartCoroutine(SetToLoad());
+                StartCoroutine(SetBowStringToLoad());
             }
             else
             {
                 SetAimingState(AIMING_STATE.IDLE);
-                animator.SetBool("Shooting", false);
+                playerAnimator.SetBool("Aiming", false);
+                bowAnimator.SetBool("Unstuck", true);
+                bowAnimator.SetBool("Stuck", false);
+                
+
             }
+           
         }
-        /*if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOTING))
+        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOTING))
         {
             if (aimingState == AIMING_STATE.AIMING)
             {
-                if (!(animator.GetBool("Shooting")))
+                if(playerAnimator.GetBool("CanShoot"))
                 {
-                    animator.Play("Shooting", 1, 0f);
-                    animator.SetBool("Shooting", true);
-                    bow.LoadBow();
+                    playerAnimator.Play("AimRecoil", 1, 0f);
+                    playerAnimator.SetBool("Shooting", true);
+                    playerAnimator.SetBool("CanShoot", false);
+                    bowAnimator.SetBool("Unstuck", true);
+                    bowAnimator.SetBool("Stuck", false);
+                    //bowAnimator.Play("UnstuckLoad");
                     StartCoroutine(ResetAnimationCoroutine());
+                    StartCoroutine(ResetShootTimer());
+                    
+                    //bow.Load();
                 }
+                
+               
             }
           
-        }*/
+        }
+    }
+    private IEnumerator SetBowStringToLoad()
+    {
+        yield return new WaitForSeconds(1 / 1.5f);
+        bowAnimator.SetBool("Stuck", true);
+
+
+
     }
     private IEnumerator SetToLoad()
     {
-        yield return new WaitForSeconds(1f/4);
-        animator.SetBool("Shooting", true);
-        bow.LoadBow();
+        yield return new WaitForSeconds(1f/10);
+        playerAnimator.SetBool("Aiming", true);
+       
+
 
     }
     private IEnumerator ResetAnimationCoroutine()
     {
-        yield return new WaitForSeconds(1f / 2);
-        animator.SetBool("Shooting", false);
+        yield return new WaitForSeconds(1f / 4);
+        playerAnimator.SetBool("Shooting", false);
+        bowAnimator.SetBool("Unstuck", false);
+     
 
     }
+    private IEnumerator ResetShootTimer()
+    {
+        yield return new WaitForSeconds(1 /1.15f);
+        playerAnimator.SetBool("CanShoot", true);
+        bowAnimator.SetBool("Stuck", true);
 
+
+    }
     private void FixedUpdate()
     {
         UpdateMovement();
@@ -194,18 +233,18 @@ public class PlayerController : MonoBehaviour
     private void UpdateMovement()
     {
         Vector3 movement;
-        animator.SetFloat("MoveSpeed", 0);
+        playerAnimator.SetFloat("MoveSpeed", 0);
         currentMoveX = Mathf.Lerp(currentMoveX, walkingChange.x, Time.deltaTime * ACCELERATION);
         moveAnimationSpeedTarget = Mathf.Lerp(moveAnimationSpeedTarget, walkingChange.magnitude, Time.deltaTime * (ACCELERATION / 2));
 
         if (NeedBackwards)
         {
-            animator.SetFloat("MoveSpeed", moveAnimationSpeedTarget * (-1));
+            playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget * (-1));
             movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed / 2 * Time.fixedDeltaTime;
         }
         else
         {
-            animator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
+            playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
             movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed * Time.fixedDeltaTime;
         }
         myRigidbody.MovePosition(myRigidbody.position + movement);
