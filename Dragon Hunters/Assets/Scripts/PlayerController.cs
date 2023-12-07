@@ -179,6 +179,9 @@ public class PlayerController : MonoBehaviour
                     playerAnimator.SetBool("CanShoot", false);
                     bowAnimator.SetBool("Unstuck", true);
                     bowAnimator.SetBool("Stuck", false);
+                    //Debug.Log("REIK BOW");
+                    bow.Fire();
+
                     //bowAnimator.Play("UnstuckLoad");
                     StartCoroutine(ResetAnimationCoroutine());
                     StartCoroutine(ResetShootTimer());

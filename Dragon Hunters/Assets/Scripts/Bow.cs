@@ -6,15 +6,16 @@ public class Bow : MonoBehaviour
 {
     public Animator bowAnimator;
     public Animator playerAnimator;
-    public Rigidbody arrowPrefab;
+    public GameObject arrowPrefab;
     public Transform shootingDirection;
     
-    private Rigidbody currentArrow;
-    private InputManager inputManager;
+    private GameObject currentArrow;
+   
 
     // Start is called before the first frame update
     void Start()
     {
+        
         //bowAnimator.Play("Load");
         //bowAnimator.speed = 0f;
     }
@@ -24,13 +25,7 @@ public class Bow : MonoBehaviour
     {
         
     }
-    public void LoadBow()
-    {
-        bowAnimator.Play("StuckLoad", -1, 1.0f);
-        
-        //bowAnimator.SetBool("Load", true);
-        //StartCoroutine(ResetAnimationCoroutine());
-    }
+   
     private IEnumerator ResetAnimationCoroutine()
     {
         yield return new WaitForSeconds(1f / 2);
@@ -39,8 +34,12 @@ public class Bow : MonoBehaviour
     }
     public void Fire()
     {
-        Vector3 direction = new Vector3(shootingDirection.position.x, shootingDirection.position.y, shootingDirection.position.z).normalized;
-        currentArrow = Instantiate(arrowPrefab);
-        currentArrow.AddForce(direction * 2F, ForceMode.VelocityChange);
+        Vector3 direction = shootingDirection.forward;
+        Quaternion arrowRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
+        
+        currentArrow = Instantiate(arrowPrefab, shootingDirection.position, arrowRotation);
+        Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
+       
+        rb.AddForce(direction * 15F, ForceMode.VelocityChange);
     }
 }
