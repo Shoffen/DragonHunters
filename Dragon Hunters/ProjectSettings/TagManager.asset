@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Glass
+  - Arrow
+  - Enemy
+  - BlueHead
+  - Head
   layers:
   - Default
   - TransparentFX
