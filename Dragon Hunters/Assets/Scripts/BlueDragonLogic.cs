@@ -5,7 +5,15 @@ using UnityEngine;
 public class BlueDragonLogic : Enemy
 {
 
+    
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        rigidBody = GetComponent<Rigidbody>();
 
+        healthBar.SetMaxHealth(maxHealth.value);
+
+    }
     // Update is called once per frame
     void Update()
     {

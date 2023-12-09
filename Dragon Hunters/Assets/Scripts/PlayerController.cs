@@ -19,7 +19,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private MultiAimConstraint shoulderBone;
     [SerializeField] private AudioSource releaseArrow;
     [SerializeField] private AudioSource loadArrow;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpDuration;
+    [SerializeField] private float groundRadius;
 
+  
     private Rigidbody myRigidbody;
     public Bow bow;
     private InputManager playerInput;
@@ -34,6 +38,7 @@ public class PlayerController : MonoBehaviour
     private Camera mainCamera;
     public Transform targetTransform;
     public LayerMask mouseAimMask;
+    public LayerMask groundLayer;
 
     private float targetAimDelta;
     private float weightStart;
@@ -42,7 +47,11 @@ public class PlayerController : MonoBehaviour
     private float aimDeltaTime;
     private bool isAimStateChangeing;
     private AIMING_STATE aimingState;
-   
+
+
+    private bool isJumping = false;
+    private float jumpTimer = 0f;
+
     private enum AIMING_STATE
     {
         IDLE,
@@ -139,6 +148,7 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput()
     {
+       
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
@@ -199,6 +209,39 @@ public class PlayerController : MonoBehaviour
             }
           
         }
+        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
+        {
+            if (playerAnimator.GetBool("CanJump"))
+            {
+                isJumping = true;
+                jumpTimer = 0f;
+            }
+
+        }
+        if (playerAnimator.GetBool("IsFalling") && IsInGroundRadius())
+        {
+           
+            Debug.Log("GRINDYS");
+            playerAnimator.SetBool("IsFalling", false);
+            playerAnimator.SetBool("IsGrounded", true);
+            StartCoroutine(ResetJump());
+           
+
+        }
+    }
+    private IEnumerator SetToFall()
+    {
+        yield return new WaitForSeconds(1 / 2f);
+        myRigidbody.mass = 1000f;
+        playerAnimator.SetBool("IsJumping", false);
+        playerAnimator.SetBool("IsFalling", true);
+        myRigidbody.velocity = Vector3.zero;
+
+    }
+    private IEnumerator ResetJump()
+    {
+        yield return new WaitForSeconds(1f);
+        playerAnimator.SetBool("CanJump", true);
     }
     private IEnumerator SetLoadArrowTimer()
     {
@@ -242,10 +285,42 @@ public class PlayerController : MonoBehaviour
         UpdateMovement();
         UpdateRotation();
         UpdateAimingState();
+        UpdateAnimations();
     }
 
+    private void UpdateAnimations()
+    {
+        if (isJumping)
+        {
+
+
+            
+
+            jumpTimer += Time.fixedDeltaTime;
+            float jumpProgress = jumpTimer / jumpDuration;
+
+            // Interpolate between the current velocity and the desired jump velocity
+            Vector2 newVelocity = Vector2.Lerp(myRigidbody.velocity, Vector2.up * jumpForce, jumpProgress);
+
+            // Apply the new velocity to the rigidbody
+            myRigidbody.velocity = newVelocity;
+
+            playerAnimator.SetBool("IsJumping", true);
+            playerAnimator.SetBool("IsGrounded", false);
+            myRigidbody.mass = 1.0f;
+            StartCoroutine(SetToFall());
+            playerAnimator.SetBool("CanJump", false);
+            // Check if the jump duration is complete
+            if (jumpTimer >= jumpDuration)
+            {
+                isJumping = false;
+                playerAnimator.SetBool("IsFalling", true);
+            }
+        }
+    }
     private void UpdateMovement()
     {
+
         Vector3 movement;
         playerAnimator.SetFloat("MoveSpeed", 0);
         currentMoveX = Mathf.Lerp(currentMoveX, walkingChange.x, Time.deltaTime * ACCELERATION);
@@ -271,5 +346,23 @@ public class PlayerController : MonoBehaviour
         Quaternion target = Quaternion.Euler(new Vector3(0, 90 * Mathf.Sign(targetTransform.position.x - transform.position.x)));
 
         myRigidbody.rotation = Quaternion.Lerp(myRigidbody.rotation, target, Time.deltaTime * rotationSpeed);
+    }
+    private bool IsInGroundRadius()
+    {
+        bool isInRadius = false;
+        // Check for GROUND objects within the specified radius
+        Collider[] colliders = Physics.OverlapSphere(myRigidbody.position, groundRadius, groundLayer);
+
+        // Iterate through the colliders to see if any of them have the "GROUND" tag
+        foreach (Collider col in colliders)
+        {
+            if (col.CompareTag("Ground"))
+            {
+                // The "GROUND" object is within the specified radius
+                isInRadius = true;
+                // You can perform additional actions here if needed
+            }
+        }
+        return isInRadius;
     }
 }

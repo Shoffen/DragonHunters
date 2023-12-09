@@ -25,6 +25,7 @@ public class ReactToHit : MonoBehaviour
             Animator animator = dragonLogic.GetComponent<Animator>();
             if (!animator.GetBool("IsDead"))
             {
+                Debug.Log("IKIRTAU");
                 animator.SetTrigger("PlayGetHit");
             }
         }

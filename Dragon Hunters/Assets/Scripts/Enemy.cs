@@ -6,31 +6,16 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-
-    public float followRadius;
-    public float attackRadius;
     public Animator animator;
     public Rigidbody rigidBody;
+    public float followRadius;
+    public float attackRadius;
     public Vector3 movement;
     public Transform playerTarget;
+
     public HealthBar healthBar;
-    public Transform headTransform;
+    public FloatValue maxHealth;
 
-    [SerializeField] private FloatValue maxHealth;
-    
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        animator = GetComponent<Animator>();
-        rigidBody = GetComponent<Rigidbody>();
-
-        healthBar.SetMaxHealth(maxHealth.value);
-
-    }
-
-    
     public bool IsInRadiusToFollow()
     {
         float distance = Vector3.Distance(playerTarget.position, this.transform.position);
@@ -51,7 +36,7 @@ public class Enemy : MonoBehaviour
     {
         healthBar.ApplyDamage(damage);
 
-        if (IsDead())
+        if (IsDead() && !(animator.GetBool("IsDead")))
         {
             animator.SetTrigger("Dead");
             animator.SetBool("IsDead", true);

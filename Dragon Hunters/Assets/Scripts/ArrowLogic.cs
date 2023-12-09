@@ -55,8 +55,7 @@ public class ArrowLogic : MonoBehaviour
     }
     private void StickArrowToEnemy(Transform enemyHead)
     {
-        Debug.Log("GERAI");
-        myBody.isKinematic = true;
+       myBody.isKinematic = true;
        foreach (BoxCollider collider in colliders)
        {
            collider.enabled = false;
