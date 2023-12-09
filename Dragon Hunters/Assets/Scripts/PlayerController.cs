@@ -17,7 +17,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AnimationCurve aimPrepareCurve;
     [SerializeField] private MultiAimConstraint[] spineBones;
     [SerializeField] private MultiAimConstraint shoulderBone;
-   
+    [SerializeField] private AudioSource releaseArrow;
+    [SerializeField] private AudioSource loadArrow;
 
     private Rigidbody myRigidbody;
     public Bow bow;
@@ -41,7 +42,7 @@ public class PlayerController : MonoBehaviour
     private float aimDeltaTime;
     private bool isAimStateChangeing;
     private AIMING_STATE aimingState;
-
+   
     private enum AIMING_STATE
     {
         IDLE,
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour
         
         SetAimingState(AIMING_STATE.IDLE, true);
         mainCamera = Camera.main;
+
         
     }
 
@@ -103,10 +105,12 @@ public class PlayerController : MonoBehaviour
             if (_isInstant)
             {
                 playerAnimator.SetLayerWeight(1, targetAimDelta);
+               
                 foreach (MultiAimConstraint constraint in spineBones)
                 {
                     constraint.data.offset = new Vector3(0, AIMING_Y_OFFSET_TARGET, 0);
                     constraint.weight = AIM_WEIGHT;
+                   
                 }
                 isAimStateChangeing = false;
             }
@@ -156,6 +160,7 @@ public class PlayerController : MonoBehaviour
                 bowAnimator.SetBool("Reset", false);
                 StartCoroutine(SetToLoad());
                 StartCoroutine(SetBowStringToLoad());
+                loadArrow.Play();
             }
             else
             {
@@ -175,13 +180,14 @@ public class PlayerController : MonoBehaviour
                 if(playerAnimator.GetBool("CanShoot"))
                 {
                     playerAnimator.Play("AimRecoil", 1, 0f);
+                    releaseArrow.Play();
                     playerAnimator.SetBool("Shooting", true);
                     playerAnimator.SetBool("CanShoot", false);
                     bowAnimator.SetBool("Unstuck", true);
                     bowAnimator.SetBool("Stuck", false);
                     //Debug.Log("REIK BOW");
                     bow.Fire();
-
+                    StartCoroutine(SetLoadArrowTimer());
                     //bowAnimator.Play("UnstuckLoad");
                     StartCoroutine(ResetAnimationCoroutine());
                     StartCoroutine(ResetShootTimer());
@@ -193,6 +199,11 @@ public class PlayerController : MonoBehaviour
             }
           
         }
+    }
+    private IEnumerator SetLoadArrowTimer()
+    {
+        yield return new WaitForSeconds(1 / 5f);
+        loadArrow.Play();
     }
     private IEnumerator SetBowStringToLoad()
     {

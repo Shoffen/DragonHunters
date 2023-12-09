@@ -35,7 +35,7 @@ public class ArrowLogic : MonoBehaviour
         {
             
         }
-        else if(other.CompareTag("Head"))
+        else if(other.CompareTag("Enemy"))
         {
 
             // Stick the arrow to the enemy's face or hit location

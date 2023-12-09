@@ -2,50 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlueDragonLogic : MonoBehaviour
+public class BlueDragonLogic : Enemy
 {
-    public float followRadius;
-    public float attackRadius;
-    private Animator animator;
-    private Rigidbody rigidBody;
-    private Vector3 movement;
-    public Transform playerTarget;
-
-    public Transform headTransform;
-
-    [SerializeField] private Collider headCollider;
-    [SerializeField] private Collider chestCollider;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        animator = GetComponent<Animator>();
-        rigidBody = GetComponent<Rigidbody>();
-    }
-   
     // Update is called once per frame
     void Update()
     {
 
-        animator.SetBool("CanFollow", IsInRadiusToFollow());
-        animator.SetBool("CanAttack", IsInRadiusToAttack());
-        if(animator.GetBool("CanFollow"))
+        if (IsInRadiusToFollow() && !(animator.GetBool("IsDead")))
         {
             // Calculate the direction from the AI to the player
             Vector3 direction = (playerTarget.position - transform.position).normalized;
 
-            // Set the movement vector
-            movement = new Vector3(direction.x, 0, direction.z)  * 1.5F * Time.fixedDeltaTime;
-            Debug.Log(movement);
+            if (IsInRadiusToAttack())
+            {
+                animator.SetBool("CanAttack", true);
+                animator.SetBool("CanFollow", false);
+                // Set the movement vector
+                movement = Vector3.zero;
+            }
+            else if (!IsInRadiusToAttack())
+            {
+                animator.SetBool("CanFollow", true);
+                animator.SetBool("CanAttack", false);
+
+                // Set the movement vector
+                movement = new Vector3(direction.x, 0, direction.z) * 1.5F * Time.fixedDeltaTime;
+            }
         }
-       
+        else
+        {
+            animator.SetBool("CanFollow", false);
+            movement = Vector3.zero;
+        }
+        Debug.Log(animator.GetBool("CanFollow"));
     }
     private void FixedUpdate()
     {
+
         UpdateMovement();
         UpdateRotation();
     }
+
     private void UpdateMovement()
     {
         rigidBody.MovePosition(rigidBody.position + movement);
@@ -56,16 +55,6 @@ public class BlueDragonLogic : MonoBehaviour
 
         rigidBody.rotation = Quaternion.Lerp(rigidBody.rotation, target, Time.deltaTime * 6);
     }
-    private bool IsInRadiusToFollow()
-    {
-        float distance = Vector3.Distance(playerTarget.position, this.transform.position);
-     
-        return distance < followRadius;
-    }
-    private bool IsInRadiusToAttack()
-    {
-        float distance = Vector3.Distance(playerTarget.position, this.transform.position);
-        return distance < attackRadius;
-    }
-   
+
+
 }
