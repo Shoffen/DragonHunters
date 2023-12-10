@@ -209,39 +209,56 @@ public class PlayerController : MonoBehaviour
             }
           
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        playerAnimator.SetBool("IsGrounded", IsInGroundRadius());
+        //--------------------------------------------------------------------------------------------------------------------------------------
         if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
         {
             if (playerAnimator.GetBool("CanJump"))
             {
                 isJumping = true;
-                jumpTimer = 0f;
+                StartCoroutine(ResetJump(jumpDuration));
             }
 
         }
-        if (playerAnimator.GetBool("IsFalling") && IsInGroundRadius())
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        if (!playerAnimator.GetBool("IsJumping"))
         {
-           
-            Debug.Log("GRINDYS");
-            playerAnimator.SetBool("IsFalling", false);
-            playerAnimator.SetBool("IsGrounded", true);
-            StartCoroutine(ResetJump());
-           
-
+            playerAnimator.SetBool("IsFalling", !IsInGroundRadius());
         }
+        if (playerAnimator.GetBool("IsFalling"))
+        {
+
+            jumpTimer += Time.fixedDeltaTime;
+            float jumpProgress = jumpTimer / jumpDuration;
+
+
+            Vector2 newVelocity = Vector2.Lerp(myRigidbody.velocity, Vector2.down * jumpForce, jumpProgress);
+
+
+            Debug.Log("Final velocity: " + myRigidbody.velocity.y);
+        }
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------------------
+
+        //--------------------------------------------------------------------------------------------------------------------------------------
     }
     private IEnumerator SetToFall()
     {
         yield return new WaitForSeconds(1 / 2f);
         myRigidbody.mass = 1000f;
         playerAnimator.SetBool("IsJumping", false);
+        myRigidbody.velocity = Vector2.zero;
         playerAnimator.SetBool("IsFalling", true);
-        myRigidbody.velocity = Vector3.zero;
 
     }
-    private IEnumerator ResetJump()
+    private IEnumerator ResetJump(float jumpDuration)
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(jumpDuration + 2f);
         playerAnimator.SetBool("CanJump", true);
+        jumpTimer = 0f;
     }
     private IEnumerator SetLoadArrowTimer()
     {
@@ -285,13 +302,14 @@ public class PlayerController : MonoBehaviour
         UpdateMovement();
         UpdateRotation();
         UpdateAimingState();
-        UpdateAnimations();
+        UpdateJumpingCycle();
     }
 
-    private void UpdateAnimations()
+    private void UpdateJumpingCycle()
     {
         if (isJumping)
         {
+            
             jumpTimer += Time.fixedDeltaTime;
             float jumpProgress = jumpTimer / jumpDuration;
 
@@ -302,7 +320,7 @@ public class PlayerController : MonoBehaviour
             myRigidbody.velocity = newVelocity;
 
             playerAnimator.SetBool("IsJumping", true);
-            playerAnimator.SetBool("IsGrounded", false);
+            //playerAnimator.SetBool("IsGrounded", false);
             myRigidbody.mass = 1.0f;
             StartCoroutine(SetToFall());
             playerAnimator.SetBool("CanJump", false);
@@ -310,9 +328,10 @@ public class PlayerController : MonoBehaviour
             if (jumpTimer >= jumpDuration)
             {
                 isJumping = false;
-                playerAnimator.SetBool("IsFalling", true);
+                
             }
         }
+
     }
     private void UpdateMovement()
     {

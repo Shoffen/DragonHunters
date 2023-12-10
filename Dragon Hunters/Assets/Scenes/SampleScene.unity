@@ -1414,7 +1414,7 @@ MonoBehaviour:
   shoulderBone: {fileID: 899264788}
   releaseArrow: {fileID: 750916763}
   loadArrow: {fileID: 750916765}
-  jumpForce: 5
+  jumpForce: 7
   jumpDuration: 0.02
   groundRadius: 0.1
   bow: {fileID: 1217221846}
@@ -1791,11 +1791,6 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8191740002585371210, guid: 0d2bc6937074934428ecd8613a11b436, type: 3}
   m_PrefabInstance: {fileID: 713755621}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &780508650 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1502245846248422447, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-  m_PrefabInstance: {fileID: 3053292168348995289}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &814375960 stripped
 Transform:
@@ -3969,7 +3964,7 @@ PrefabInstance:
     - target: {fileID: 1921884966298013247, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
       propertyPath: damageLabel
       value: 
-      objectReference: {fileID: 780508650}
+      objectReference: {fileID: 8446234353522114834, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
     - target: {fileID: 1921884966298013247, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
       propertyPath: attackRadius
       value: 4
@@ -4849,64 +4844,3 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1921884966298013234, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
---- !u!1001 &3053292168348995289
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1502245846248422447, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_Name
-      value: Test
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_RootOrder
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 4.624
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.34
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.96
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2574654588864123492, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4680358495422707060, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
-      propertyPath: speed
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 182ac5142067d9d41add9d215b280a41, type: 3}

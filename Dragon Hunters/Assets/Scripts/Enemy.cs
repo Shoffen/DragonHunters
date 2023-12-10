@@ -38,9 +38,12 @@ public class Enemy : MonoBehaviour
             animator.SetBool("IsDead", true);
             StartCoroutine(Vanish());
         }
-        GameObject newDamageLabel = Instantiate(damageLabel, damageLabelSpawn.position, damageLabel.transform.rotation);
-       
-        newDamageLabel.GetComponent<DamageLabel>().hitDamage = damage;
+        if (!animator.GetBool("IsDead"))
+        {
+            GameObject newDamageLabel = Instantiate(damageLabel, damageLabelSpawn.position, damageLabel.transform.rotation);
+
+            newDamageLabel.GetComponent<DamageLabel>().hitDamage = damage;
+        }
 
     }
     public bool IsDead(HealthBar healthBar)
