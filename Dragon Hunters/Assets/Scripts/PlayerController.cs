@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
         {
-            targetTransform.position = hit.point;
+            targetTransform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z - 2f);
         }
         walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
         if (isAimStateChangeing)
@@ -240,7 +240,7 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator ResetJump()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         playerAnimator.SetBool("CanJump", true);
     }
     private IEnumerator SetLoadArrowTimer()
@@ -292,10 +292,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isJumping)
         {
-
-
-            
-
             jumpTimer += Time.fixedDeltaTime;
             float jumpProgress = jumpTimer / jumpDuration;
 
@@ -365,4 +361,6 @@ public class PlayerController : MonoBehaviour
         }
         return isInRadius;
     }
+
+
 }

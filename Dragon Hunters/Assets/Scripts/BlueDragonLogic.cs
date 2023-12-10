@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class BlueDragonLogic : Enemy
 {
+    public HealthBar healthBar;
 
-    
     void Start()
     {
         animator = GetComponent<Animator>();
         rigidBody = GetComponent<Rigidbody>();
 
+        
         healthBar.SetMaxHealth(maxHealth.value);
 
     }

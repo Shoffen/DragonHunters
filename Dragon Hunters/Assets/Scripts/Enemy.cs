@@ -12,9 +12,9 @@ public class Enemy : MonoBehaviour
     public float attackRadius;
     public Vector3 movement;
     public Transform playerTarget;
-
-    public HealthBar healthBar;
     public FloatValue maxHealth;
+    public GameObject damageLabel;
+    public Transform damageLabelSpawn;
 
     public bool IsInRadiusToFollow()
     {
@@ -28,22 +28,22 @@ public class Enemy : MonoBehaviour
 
         return distance < attackRadius;
     }
-    public void OnTriggerEnter(Collider other)
-    {
-        //Debug.Log("NUMUN");
-    }
-    public void GetDamage(int damage)
+    public void GetDamage(int damage, HealthBar healthBar)
     {
         healthBar.ApplyDamage(damage);
 
-        if (IsDead() && !(animator.GetBool("IsDead")))
+        if (IsDead(healthBar) && !(animator.GetBool("IsDead")))
         {
             animator.SetTrigger("Dead");
             animator.SetBool("IsDead", true);
             StartCoroutine(Vanish());
         }
+        GameObject newDamageLabel = Instantiate(damageLabel, damageLabelSpawn.position, damageLabel.transform.rotation);
+       
+        newDamageLabel.GetComponent<DamageLabel>().hitDamage = damage;
+
     }
-    public bool IsDead()
+    public bool IsDead(HealthBar healthBar)
     {
         return healthBar.slider.value == 0;
     }
