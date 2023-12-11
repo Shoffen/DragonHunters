@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-
+    public HealthBar healthBar;
     public Animator animator;
     public Rigidbody rigidBody;
     public float followRadius;
@@ -16,6 +16,10 @@ public class Enemy : MonoBehaviour
     public GameObject damageLabel;
     public Transform damageLabelSpawn;
 
+    private void Start()
+    {
+        healthBar.SetMaxHealth(maxHealth.value);
+    }
     public bool IsInRadiusToFollow()
     {
         float distance = Vector3.Distance(playerTarget.position, this.transform.position);
@@ -28,14 +32,18 @@ public class Enemy : MonoBehaviour
 
         return distance < attackRadius;
     }
-    public void GetDamage(int damage, HealthBar healthBar)
+    public void GetDamage(int damage)
     {
+        Debug.Log("ATNEÐIAU DAR KARTÀ: " + damage);
         healthBar.ApplyDamage(damage);
 
         if (IsDead(healthBar) && !(animator.GetBool("IsDead")))
         {
             animator.SetTrigger("Dead");
             animator.SetBool("IsDead", true);
+            GameObject newDamageLabel = Instantiate(damageLabel, damageLabelSpawn.position, damageLabel.transform.rotation);
+
+            newDamageLabel.GetComponent<DamageLabel>().hitDamage = damage;
             StartCoroutine(Vanish());
         }
         if (!animator.GetBool("IsDead"))
@@ -56,5 +64,24 @@ public class Enemy : MonoBehaviour
         Destroy(rigidBody.gameObject);
 
 
+    }
+    private void FixedUpdate()
+    {
+        if (!animator.GetBool("IsDead"))
+        {
+            UpdateMovement();
+            UpdateRotation();
+        }
+    }
+    public void UpdateMovement()
+    {
+        
+        rigidBody.MovePosition(rigidBody.position + movement * (animator.GetBool("CanFollow") ? 1 : 0));
+    }
+    public void UpdateRotation()
+    {
+        Quaternion target = Quaternion.Euler(new Vector3(0, 90 * Mathf.Sign(playerTarget.position.x - transform.position.x)));
+
+        rigidBody.rotation = Quaternion.Lerp(rigidBody.rotation, target, Time.deltaTime * 6);
     }
 }

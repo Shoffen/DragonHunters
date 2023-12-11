@@ -10,7 +10,7 @@ public class ArrowLogic : MonoBehaviour
     public BoxCollider[] colliders;
     private Transform headObject;
     public BlueDragonLogic blueDragonLogic;
-
+    public int arrowDamage;
     
     // Start is called before the first frame update
     void Start()
@@ -38,10 +38,8 @@ public class ArrowLogic : MonoBehaviour
         else if(other.CompareTag("Enemy"))
         {
 
-            // Stick the arrow to the enemy's face or hit location
-          
+            other.transform.root.gameObject.GetComponent<HitColliderData>().PassInHit(other, arrowDamage);
             StickArrowToEnemy(other.transform);
-            
             
         }
         else

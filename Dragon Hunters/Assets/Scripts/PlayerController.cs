@@ -236,7 +236,7 @@ public class PlayerController : MonoBehaviour
             Vector2 newVelocity = Vector2.Lerp(myRigidbody.velocity, Vector2.down * jumpForce, jumpProgress);
 
 
-            Debug.Log("Final velocity: " + myRigidbody.velocity.y);
+            //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
         }
 
 
