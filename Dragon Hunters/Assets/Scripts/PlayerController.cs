@@ -52,11 +52,13 @@ public class PlayerController : MonoBehaviour
 
     private bool isJumping = false;
     private float jumpTimer = 0f;
+    private float drawTension;
 
     private enum AIMING_STATE
     {
         IDLE,
-        AIMING
+        AIMING,
+        CHARGING
     }
 
     private bool NeedBackwards
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviour
         myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<InputManager>();
         
-        SetAimingState(AIMING_STATE.IDLE, true);
+        SetAimingState(AIMING_STATE.AIMING, true);
         mainCamera = Camera.main;
 
         
@@ -81,6 +83,11 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         GetInput();
+    }
+
+    public void SetPlayerState(int _state)
+    {
+        aimingState = (AIMING_STATE)_state;
     }
 
     private void SetAimingState(AIMING_STATE _state = AIMING_STATE.IDLE, bool _isInstant = false)
@@ -161,28 +168,32 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.AIMING))
+        switch (aimingState)
         {
-            if(aimingState == AIMING_STATE.IDLE)
-            {
-                
-                SetAimingState(AIMING_STATE.AIMING);
-                //bowAnimator.SetBool("Unstuck", false);
-                //bowAnimator.SetBool("Reset", false);
-                //StartCoroutine(SetToLoad());
-                //StartCoroutine(SetBowStringToLoad());
-                //loadArrow.Play();
-            }
-            else
-            {
-                SetAimingState(AIMING_STATE.IDLE);
-                //playerAnimator.SetBool("Aiming", false);
-                //bowAnimator.SetBool("Unstuck", true);
-                //bowAnimator.SetBool("Stuck", false);
-                
-
-            }
-           
+            case AIMING_STATE.IDLE:
+                return;
+            case AIMING_STATE.AIMING:
+                playerAnimator.SetLayerWeight(1, 1);
+                return;
+            case AIMING_STATE.CHARGING:
+                if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
+                {
+                    drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
+                    playerAnimator.SetFloat("DrawTension", drawTension);
+                }
+                else
+                {
+                    if(drawTension != 0)
+                    {
+                        drawTension = 0;
+                        playerAnimator.SetFloat("DrawTension", drawTension);
+                        playerAnimator.SetTrigger("Shoot");
+                        SetPlayerState((int)AIMING_STATE.AIMING);
+                        //shot();
+                    }
+                    playerAnimator.SetFloat("DrawTension", drawTension);
+                }
+                return;
         }
         if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOTING))
         {
@@ -240,60 +251,9 @@ public class PlayerController : MonoBehaviour
             //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
         }
 
-        if(playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
-        {
-            if(aimingState == AIMING_STATE.AIMING)
-            {
-
-                // Stop the existing coroutine if it's running
-                if (releaseCoroutine != null)
-                {
-                    StopCoroutine(releaseCoroutine);
-                    releaseCoroutine = null;
-                }
-
-                playerAnimator.SetLayerWeight(2, 1);
-                playerAnimator.SetBool("Draw", true);
-                playerAnimator.SetBool("AfterAim", true);
-                playerAnimator.SetBool("Unfreeze", false);
-                //playerAnimator.SetBool("Unfreeze", false);
-                // Stop the release coroutine if it's running
-
-            }
-        }
-        if (!playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
-        {
-
-            if(aimingState == AIMING_STATE.AIMING && playerAnimator.GetBool("AfterAim"))
-            {
-
-                // Start the release coroutine if it's not running
-                if (releaseCoroutine == null)
-                {
-                    playerAnimator.SetTrigger("PlayRelease");
-                    releaseCoroutine = StartCoroutine(SetRelease());
-                }
-
-
-
-            }
-        }
-
-
         //--------------------------------------------------------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------------------------------------------------
-    }
-    private IEnumerator SetRelease()
-    {
-        yield return new WaitForSeconds(1f);
-        playerAnimator.SetLayerWeight(2, 0);
-        playerAnimator.SetBool("AfterAim", false);
-        playerAnimator.SetBool("Unfreeze", true);
-        playerAnimator.SetBool("Draw", false);
-        releaseCoroutine = null; // Set coroutine to null to indicate it has completed
-        //playerAnimator.SetBool("Unfreeze", true);
-
     }
     private IEnumerator SetToFall()
     {
@@ -310,41 +270,13 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetBool("CanJump", true);
         jumpTimer = 0f;
     }
-    private IEnumerator SetLoadArrowTimer()
-    {
-        yield return new WaitForSeconds(1 / 5f);
-        loadArrow.Play();
-    }
-    private IEnumerator SetBowStringToLoad()
-    {
-        yield return new WaitForSeconds(1 / 1.5f);
-        bowAnimator.SetBool("Stuck", true);
 
-
-
-    }
-    private IEnumerator SetToLoad()
-    {
-        yield return new WaitForSeconds(1f/10);
-        playerAnimator.SetBool("Aiming", true);
-       
-
-
-    }
     private IEnumerator ResetAnimationCoroutine()
     {
         yield return new WaitForSeconds(1f / 4);
         playerAnimator.SetBool("Shooting", false);
         bowAnimator.SetBool("Unstuck", false);
      
-
-    }
-    private IEnumerator ResetShootTimer()
-    {
-        yield return new WaitForSeconds(1 /1.15f);
-        playerAnimator.SetBool("CanShoot", true);
-        bowAnimator.SetBool("Stuck", true);
-
 
     }
     private void FixedUpdate()
