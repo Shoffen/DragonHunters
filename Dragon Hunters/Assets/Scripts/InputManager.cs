@@ -68,6 +68,23 @@ public class InputManager : MonoBehaviour
         return false;
     }
 
+    public bool IsButtonHeld(PLAYER_ACTION _action = PLAYER_ACTION.INTERACTION)
+    {
+        if (actionMap != null)
+        {
+            string actionName = _action.ToString().ToLower();
+            InputAction inputAction = actionMap[actionName];
+
+            // Check if the button is held down (ReadValue > 0)
+            if (inputAction.ReadValue<float>() > 0)
+            {
+                // Debug.Log("Button held down: " + _action);
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 
 

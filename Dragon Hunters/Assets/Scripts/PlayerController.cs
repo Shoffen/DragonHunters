@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private const float AIM_PREPARE_DURATION = 4f; // second / n
     private const float AIM_WEIGHT = 0.5f;
     private const float IDLE_WEIGHT = 0.1f;
+    private Coroutine releaseCoroutine;
 
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private Animator bowAnimator;
@@ -166,18 +167,18 @@ public class PlayerController : MonoBehaviour
             {
                 
                 SetAimingState(AIMING_STATE.AIMING);
-                bowAnimator.SetBool("Unstuck", false);
-                bowAnimator.SetBool("Reset", false);
-                StartCoroutine(SetToLoad());
-                StartCoroutine(SetBowStringToLoad());
-                loadArrow.Play();
+                //bowAnimator.SetBool("Unstuck", false);
+                //bowAnimator.SetBool("Reset", false);
+                //StartCoroutine(SetToLoad());
+                //StartCoroutine(SetBowStringToLoad());
+                //loadArrow.Play();
             }
             else
             {
                 SetAimingState(AIMING_STATE.IDLE);
-                playerAnimator.SetBool("Aiming", false);
-                bowAnimator.SetBool("Unstuck", true);
-                bowAnimator.SetBool("Stuck", false);
+                //playerAnimator.SetBool("Aiming", false);
+                //bowAnimator.SetBool("Unstuck", true);
+                //bowAnimator.SetBool("Stuck", false);
                 
 
             }
@@ -187,7 +188,7 @@ public class PlayerController : MonoBehaviour
         {
             if (aimingState == AIMING_STATE.AIMING)
             {
-                if(playerAnimator.GetBool("CanShoot"))
+                /*if(playerAnimator.GetBool("CanShoot"))
                 {
                     playerAnimator.Play("AimRecoil", 1, 0f);
                     releaseArrow.Play();
@@ -203,7 +204,7 @@ public class PlayerController : MonoBehaviour
                     StartCoroutine(ResetShootTimer());
                     
                     //bow.Load();
-                }
+                }*/
                 
                
             }
@@ -239,11 +240,60 @@ public class PlayerController : MonoBehaviour
             //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
         }
 
+        if(playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
+        {
+            if(aimingState == AIMING_STATE.AIMING)
+            {
+
+                // Stop the existing coroutine if it's running
+                if (releaseCoroutine != null)
+                {
+                    StopCoroutine(releaseCoroutine);
+                    releaseCoroutine = null;
+                }
+
+                playerAnimator.SetLayerWeight(2, 1);
+                playerAnimator.SetBool("Draw", true);
+                playerAnimator.SetBool("AfterAim", true);
+                playerAnimator.SetBool("Unfreeze", false);
+                //playerAnimator.SetBool("Unfreeze", false);
+                // Stop the release coroutine if it's running
+
+            }
+        }
+        if (!playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
+        {
+
+            if(aimingState == AIMING_STATE.AIMING && playerAnimator.GetBool("AfterAim"))
+            {
+
+                // Start the release coroutine if it's not running
+                if (releaseCoroutine == null)
+                {
+                    playerAnimator.SetTrigger("PlayRelease");
+                    releaseCoroutine = StartCoroutine(SetRelease());
+                }
+
+
+
+            }
+        }
 
 
         //--------------------------------------------------------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------------------------------------------------
+    }
+    private IEnumerator SetRelease()
+    {
+        yield return new WaitForSeconds(1f);
+        playerAnimator.SetLayerWeight(2, 0);
+        playerAnimator.SetBool("AfterAim", false);
+        playerAnimator.SetBool("Unfreeze", true);
+        playerAnimator.SetBool("Draw", false);
+        releaseCoroutine = null; // Set coroutine to null to indicate it has completed
+        //playerAnimator.SetBool("Unfreeze", true);
+
     }
     private IEnumerator SetToFall()
     {
