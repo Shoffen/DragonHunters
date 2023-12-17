@@ -16,7 +16,7 @@ public class ArrowLogic : MonoBehaviour
     void Start()
     {
         myBody = GetComponent<Rigidbody>();
-        
+        Debug.Log("OPAAAAAAAAAAAAA" + myBody.velocity.y);
     }
 
     // Update is called once per frame
@@ -26,8 +26,8 @@ public class ArrowLogic : MonoBehaviour
         {
             myBody.position = new Vector3(-1.24f, 1.32f, 0.094f);
 
-
         }
+       
     }
     private void OnTriggerEnter(Collider other)
     {

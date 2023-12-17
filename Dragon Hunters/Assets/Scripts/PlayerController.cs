@@ -6,41 +6,46 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private const float ACCELERATION = 12f;
     private const float AIMING_Y_OFFSET_TARGET = 80f;
     private const float AIM_PREPARE_DURATION = 4f; // second / n
     private const float AIM_WEIGHT = 0.5f;
     private const float IDLE_WEIGHT = 0.1f;
-    private Coroutine releaseCoroutine;
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    [SerializeField] private CameraFollow cameraFollow;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private Animator bowAnimator;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private AnimationCurve aimPrepareCurve;
     [SerializeField] private MultiAimConstraint[] spineBones;
     [SerializeField] private MultiAimConstraint shoulderBone;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private AudioSource releaseArrow;
     [SerializeField] private AudioSource loadArrow;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private float jumpForce;
     [SerializeField] private float jumpDuration;
     [SerializeField] private float groundRadius;
-
-  
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    [SerializeField] private GameObject blueCircleVFX;
+    [SerializeField] private GameObject purpleCircleVFX;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private Rigidbody myRigidbody;
     public Bow bow;
     private InputManager playerInput;
     private float moveAnimationSpeedTarget;
     private float currentMoveX;
-    public Transform opa;
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public float walkingSpeed;
     public float rotationSpeed;
     private Vector3 walkingChange;
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private Camera mainCamera;
     public Transform targetTransform;
     public LayerMask mouseAimMask;
     public LayerMask groundLayer;
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private float targetAimDelta;
     private float weightStart;
     private float weightTarget;
@@ -48,12 +53,21 @@ public class PlayerController : MonoBehaviour
     private float aimDeltaTime;
     private bool isAimStateChangeing;
     private AIMING_STATE aimingState;
-
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    private bool hasSpawnedEffect = false;
     private bool isJumping = false;
     private float jumpTimer = 0f;
     private float drawTension;
-
+    private float time;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    private GameObject effectBlue;
+    private GameObject effectPurple;
+    public float destructionTime = 5.0f;
+    public float shrinkPower = 1.5f;
+    private bool needsToStopBuild = false;
+    private Coroutine deactivate;
+    private Coroutine buildupCoroutine;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private enum AIMING_STATE
     {
         IDLE,
@@ -69,31 +83,42 @@ public class PlayerController : MonoBehaviour
                 targetTransform.position.x < transform.position.x && walkingChange.x == -1 ? false : true;
         }
     }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<InputManager>();
-        
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         SetAimingState(AIMING_STATE.AIMING, true);
         mainCamera = Camera.main;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        
+
+
+
     }
 
     private void Update()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         GetInput();
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
     public void SetPlayerState(int _state)
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         aimingState = (AIMING_STATE)_state;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
     private void SetAimingState(AIMING_STATE _state = AIMING_STATE.IDLE, bool _isInstant = false)
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         aimingState = _state;
         isAimStateChangeing = true;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (aimingState == AIMING_STATE.IDLE)
         {
             startAimDelta = 1;
@@ -132,10 +157,12 @@ public class PlayerController : MonoBehaviour
                 isAimStateChangeing = false;
             }
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
     private void UpdateAimingState()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (isAimStateChangeing)
         {
             aimDeltaTime = Mathf.Clamp01(aimDeltaTime + Time.deltaTime * AIM_PREPARE_DURATION);
@@ -152,80 +179,17 @@ public class PlayerController : MonoBehaviour
                 aimDeltaTime = 0;
             }
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
     private void GetInput()
     {
-       
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
-        {
-            targetTransform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z - 2f);
-        }
-        walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
-        if (isAimStateChangeing)
-        {
-            return;
-        }
-        switch (aimingState)
-        {
-            case AIMING_STATE.IDLE:
-                return;
-            case AIMING_STATE.AIMING:
-                playerAnimator.SetLayerWeight(1, 1);
-                return;
-            case AIMING_STATE.CHARGING:
-                if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
-                {
-                    drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
-                    playerAnimator.SetFloat("DrawTension", drawTension);
-                }
-                else
-                {
-                    if(drawTension != 0)
-                    {
-                        drawTension = 0;
-                        playerAnimator.SetFloat("DrawTension", drawTension);
-                        playerAnimator.SetTrigger("Shoot");
-                        SetPlayerState((int)AIMING_STATE.AIMING);
-                        //shot();
-                    }
-                    playerAnimator.SetFloat("DrawTension", drawTension);
-                }
-                return;
-        }
-        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.SHOOTING))
-        {
-            if (aimingState == AIMING_STATE.AIMING)
-            {
-                /*if(playerAnimator.GetBool("CanShoot"))
-                {
-                    playerAnimator.Play("AimRecoil", 1, 0f);
-                    releaseArrow.Play();
-                    playerAnimator.SetBool("Shooting", true);
-                    playerAnimator.SetBool("CanShoot", false);
-                    bowAnimator.SetBool("Unstuck", true);
-                    bowAnimator.SetBool("Stuck", false);
-                    //Debug.Log("REIK BOW");
-                    bow.Fire();
-                    StartCoroutine(SetLoadArrowTimer());
-                    //bowAnimator.Play("UnstuckLoad");
-                    StartCoroutine(ResetAnimationCoroutine());
-                    StartCoroutine(ResetShootTimer());
-                    
-                    //bow.Load();
-                }*/
-                
-               
-            }
-          
-        }
         //--------------------------------------------------------------------------------------------------------------------------------------
         playerAnimator.SetBool("IsGrounded", IsInGroundRadius());
         //--------------------------------------------------------------------------------------------------------------------------------------
         if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
         {
+            Debug.Log("SOKT REIK");
             if (playerAnimator.GetBool("CanJump"))
             {
                 isJumping = true;
@@ -238,6 +202,7 @@ public class PlayerController : MonoBehaviour
         {
             playerAnimator.SetBool("IsFalling", !IsInGroundRadius());
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (playerAnimator.GetBool("IsFalling"))
         {
 
@@ -250,45 +215,233 @@ public class PlayerController : MonoBehaviour
 
             //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
         }
-
         //--------------------------------------------------------------------------------------------------------------------------------------
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+        {
+            targetTransform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z - 2f);
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        if (isAimStateChangeing)
+        {
+            return;
+        }
+        switch (aimingState)
+        {
+           
+            case AIMING_STATE.IDLE:
+                return;
+            case AIMING_STATE.AIMING:
+                playerAnimator.SetLayerWeight(1, 1);
+                return;
+            case AIMING_STATE.CHARGING:
+                if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
+                {
+                    needsToStopBuild = false;
+                    time += Time.deltaTime;
+                    if (deactivate != null)
+                    {
+                        StopCoroutine(deactivate);
+                    }
+                    drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
+                    playerAnimator.SetFloat("DrawTension", drawTension);
 
-        //--------------------------------------------------------------------------------------------------------------------------------------
+                    if(time > 1.45f && !hasSpawnedEffect)
+                    {
+                        cameraFollow.needShake = true;
+                        effectBlue = Instantiate(blueCircleVFX, this.transform);
+                        effectPurple = Instantiate(purpleCircleVFX, this.transform);
+                        PlayVFX(effectPurple, effectBlue, 2f, true);
+                        hasSpawnedEffect = true;
+                    }
+                   
+                }
+                else
+                {
+                    if (drawTension != 0)
+                    {
+                        cameraFollow.needShake = false;
+                        if (buildupCoroutine != null)
+                        {
+                            StopCoroutine(buildupCoroutine);
+                            PlayVFX(effectPurple, effectBlue, 2f, false);
+                        }
+                        hasSpawnedEffect = false;
+                        time = 0;
+
+                        
+                       
+                        
+
+                        bow.Fire(playerAnimator.GetFloat("DrawTension"));
+                        releaseArrow.Play();
+                        drawTension = 0;
+                        playerAnimator.SetFloat("DrawTension", drawTension);
+                        playerAnimator.SetTrigger("Shoot");
+                        SetPlayerState((int)AIMING_STATE.AIMING);
+                    }
+                    playerAnimator.SetFloat("DrawTension", drawTension);
+                }
+                return;
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
+    private void PlayVFX(GameObject vfxGameObjectPurple, GameObject vfxGameObjectBlue, float buildupTime, bool buildUp)
+    {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        ParticleSystem vfxComponentPurple = vfxGameObjectPurple.GetComponent<ParticleSystem>();
+        ParticleSystem vfxComponentBlue = vfxGameObjectBlue.GetComponent<ParticleSystem>();
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        if (vfxComponentPurple != null && buildUp)
+        {
+            buildupCoroutine = StartCoroutine(BuildupEffect(vfxComponentPurple, vfxComponentBlue, buildupTime));
+            // Sounding
+            // AudioSource audioSource = vfxGameObject.GetComponent<AudioSource>();
+            // if (audioSource != null)
+            // {
+            //     audioSource.Play();
+            // }
+        }
+        else if(vfxComponentPurple != null && !buildUp)
+        {
+           
+            deactivate = StartCoroutine(GradualDestruction(vfxGameObjectPurple, vfxGameObjectBlue));
+        }
+        else
+        {
+            Debug.LogWarning("VFX component not found in the instantiated prefab.");
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+
+    IEnumerator BuildupEffect(ParticleSystem vfxComponentPurple, ParticleSystem vfxComponentBlue, float buildupTime)
+    {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        if (!needsToStopBuild)
+        {
+            float timer = 0f;
+            float originalStartLifetimePurple = vfxComponentPurple.main.startLifetime.constant;
+            float originalStartLifetimeBlue = vfxComponentBlue.main.startLifetime.constant;
+           
+            Vector3 initialScale = Vector3.one * 0.1f; // Start from a very small scale
+            Vector3 finalScale = Vector3.one;
+
+            
+            while (timer < buildupTime)
+            {
+
+                timer += Time.deltaTime;
+
+                // Calculate the interpolation factor
+                float t = timer / buildupTime;
+
+                // Adjust the scale gradually
+                vfxComponentPurple.transform.localScale = Vector3.Lerp(initialScale, new Vector3(0.75f, 0.75f, .75f), t);
+                vfxComponentBlue.transform.localScale = Vector3.Lerp(initialScale, finalScale, t);
+                // Calculate the interpolation factor for start lifetime
+                float lifetimeT = Mathf.Pow(t, 2); // You can adjust the power for a different scaling effect
+
+                // Adjust the start lifetime gradually
+                var mainModulePurple = vfxComponentPurple.main;
+                var mainModuleBlue = vfxComponentBlue.main;
+                mainModulePurple.startLifetime = Mathf.Lerp(0f, originalStartLifetimePurple, lifetimeT);
+                mainModuleBlue.startLifetime = Mathf.Lerp(0f, originalStartLifetimeBlue, lifetimeT);
+
+                yield return null;
+            }
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Ensure the VFX reaches its maximum effect
+            vfxComponentPurple.transform.localScale = new Vector3(0.75f, 0.75f, .75f);
+            vfxComponentBlue.transform.localScale = finalScale;
+            // Reset the start lifetime to its original value
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            var finalMainModulePurple = vfxComponentPurple.main;
+            var finalMainModuleBlue = vfxComponentBlue.main;
+            finalMainModulePurple.startLifetime = originalStartLifetimePurple;
+            finalMainModuleBlue.startLifetime = originalStartLifetimeBlue;
+            // Play the VFX after the buildup
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            vfxComponentPurple.Play();
+            vfxComponentBlue.Play();
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        }
+    }
+
+
+    IEnumerator GradualDestruction(GameObject vfxGameObjectPurple, GameObject vfxGameObjectBlue)
+    {
+
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        float timer = 0f;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        while (timer < destructionTime)
+        {
+            timer += Time.deltaTime;
+
+            float t = timer / destructionTime * shrinkPower * 2;
+
+            // Apply a power function for a stronger effect
+            float adjustedT = Mathf.Pow(t, shrinkPower);
+
+            // Gradually scale down the GameObject
+            vfxGameObjectPurple.transform.localScale = Vector3.Lerp(effectPurple.transform.localScale, Vector3.zero, adjustedT);
+            vfxGameObjectBlue.transform.localScale = Vector3.Lerp(effectBlue.transform.localScale, Vector3.zero, adjustedT);
+            yield return null;
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Ensure the GameObject is very small before destroying
+        vfxGameObjectPurple.transform.localScale = Vector3.zero;
+        vfxGameObjectBlue.transform.localScale = Vector3.zero;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Destroy the GameObject after the gradual shrinking
+        Destroy(vfxGameObjectPurple);
+        Destroy(vfxGameObjectBlue);
+        deactivate = null;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+
+
     private IEnumerator SetToFall()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         yield return new WaitForSeconds(1 / 2f);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         myRigidbody.mass = 1000f;
         playerAnimator.SetBool("IsJumping", false);
         myRigidbody.velocity = Vector2.zero;
         playerAnimator.SetBool("IsFalling", true);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     }
     private IEnumerator ResetJump(float jumpDuration)
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         yield return new WaitForSeconds(jumpDuration + 2f);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         playerAnimator.SetBool("CanJump", true);
         jumpTimer = 0f;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
-    private IEnumerator ResetAnimationCoroutine()
-    {
-        yield return new WaitForSeconds(1f / 4);
-        playerAnimator.SetBool("Shooting", false);
-        bowAnimator.SetBool("Unstuck", false);
-     
-
-    }
     private void FixedUpdate()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         UpdateMovement();
         UpdateRotation();
         UpdateAimingState();
         UpdateJumpingCycle();
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
     private void UpdateJumpingCycle()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (isJumping)
         {
             
@@ -313,16 +466,17 @@ public class PlayerController : MonoBehaviour
                 
             }
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     }
     private void UpdateMovement()
     {
-
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         Vector3 movement;
         playerAnimator.SetFloat("MoveSpeed", 0);
         currentMoveX = Mathf.Lerp(currentMoveX, walkingChange.x, Time.deltaTime * ACCELERATION);
         moveAnimationSpeedTarget = Mathf.Lerp(moveAnimationSpeedTarget, walkingChange.magnitude, Time.deltaTime * (ACCELERATION / 2));
-
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (NeedBackwards)
         {
             playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget * (-1));
@@ -333,23 +487,27 @@ public class PlayerController : MonoBehaviour
             playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
             movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed * Time.fixedDeltaTime;
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         myRigidbody.MovePosition(myRigidbody.position + movement);
-        
-        
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
     }
 
     private void UpdateRotation()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         Quaternion target = Quaternion.Euler(new Vector3(0, 90 * Mathf.Sign(targetTransform.position.x - transform.position.x)));
-
         myRigidbody.rotation = Quaternion.Lerp(myRigidbody.rotation, target, Time.deltaTime * rotationSpeed);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
     private bool IsInGroundRadius()
     {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         bool isInRadius = false;
         // Check for GROUND objects within the specified radius
         Collider[] colliders = Physics.OverlapSphere(myRigidbody.position, groundRadius, groundLayer);
-
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         // Iterate through the colliders to see if any of them have the "GROUND" tag
         foreach (Collider col in colliders)
         {
@@ -360,7 +518,9 @@ public class PlayerController : MonoBehaviour
                 // You can perform additional actions here if needed
             }
         }
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         return isInRadius;
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
 
