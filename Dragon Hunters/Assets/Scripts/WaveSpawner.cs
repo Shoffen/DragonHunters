@@ -10,24 +10,29 @@ public class WaveSpawner : MonoBehaviour
     public int currWave;
     private int waveValue;
     public List<GameObject> enemiesToSpawn = new List<GameObject>();
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public Transform[] spawnLocation;
     public int spawnIndex;
     private float time;
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public float spawnTimer;
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public List<GameObject> spawnedEnemies = new List<GameObject>();
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private TRIGGER_STATE state;
+    public GameObject leftWall;
+    public GameObject rightWall;
     [SerializeField] CameraFollow cameraFollow;
+    private Animator leftWallAnimator;
+    private Animator rightWallAnimator;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    
     // Start is called before the first frame update
     private enum TRIGGER_STATE
     {
         IDLE,
         ENTERED
+    }
+    private void Start()
+    {
+        leftWallAnimator = leftWall.GetComponent<Animator>();
+        rightWallAnimator = rightWall.GetComponent<Animator>();
     }
 
     public void OnAwake()
@@ -73,6 +78,10 @@ public class WaveSpawner : MonoBehaviour
             if(spawnedEnemies.Count == 0 && enemiesToSpawn.Count == 0)
             {
                 cameraFollow.isWaveInProgress = false;
+                leftWallAnimator.SetBool("Open", true);
+                rightWallAnimator.SetBool("Open", true);
+                leftWallAnimator.SetBool("Close", false);
+                rightWallAnimator.SetBool("Close", false);
             }
         }
         
@@ -89,6 +98,10 @@ public class WaveSpawner : MonoBehaviour
                 GenerateWave();
             }
         }
+        leftWallAnimator.SetBool("Open", false);
+        rightWallAnimator.SetBool("Open", false);
+        leftWallAnimator.SetBool("Close", true);
+        rightWallAnimator.SetBool("Close", true);
     }
 
     public void GenerateWave()

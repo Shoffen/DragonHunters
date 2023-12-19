@@ -51,7 +51,6 @@ public class RedDragonLogic : MonoBehaviour
             enemy.movement = Vector3.zero;
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //Debug.Log(animator.GetBool("CanFollow"));*/
     }
    
 
