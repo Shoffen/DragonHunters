@@ -56,7 +56,7 @@ public class WaveSpawner : MonoBehaviour
         if (cameraFollow.isWaveInProgress)
         {
             List<GameObject> enemiesToRemove = new List<GameObject>();
-
+         
             foreach (GameObject enemy in spawnedEnemies)
             {
                 if (enemy == null)
@@ -69,10 +69,11 @@ public class WaveSpawner : MonoBehaviour
             {
                 spawnedEnemies.Remove(enemyToRemove);
             }
-        }
-        if(cameraFollow.isWaveInProgress && spawnedEnemies.Count == 0)
-        {
-            cameraFollow.isWaveInProgress = false;
+
+            if(spawnedEnemies.Count == 0 && enemiesToSpawn.Count == 0)
+            {
+                cameraFollow.isWaveInProgress = false;
+            }
         }
         
     }
@@ -83,6 +84,7 @@ public class WaveSpawner : MonoBehaviour
             if (other.CompareTag("Player"))
             {
                 Debug.Log("ZAIDEJAS TRIGGERINO LEVEL 1");
+                cameraFollow.isWaveInProgress = true;
                 state = TRIGGER_STATE.ENTERED;
                 GenerateWave();
             }
@@ -91,7 +93,6 @@ public class WaveSpawner : MonoBehaviour
 
     public void GenerateWave()
     {
-        cameraFollow.isWaveInProgress = true;
         waveValue = currWave * 100;
 
         GenerateEnemies();
