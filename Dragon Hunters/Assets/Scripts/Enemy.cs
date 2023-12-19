@@ -16,9 +16,11 @@ public class Enemy : MonoBehaviour
     public FloatValue maxHealth;
     public GameObject damageLabel;
     public Transform damageLabelSpawn;
+    public float movementSpeed;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
+        playerTarget = GameObject.Find("Player").transform;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         healthBar.SetMaxHealth(maxHealth.value);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------

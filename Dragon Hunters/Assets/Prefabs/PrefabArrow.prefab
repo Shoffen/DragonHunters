@@ -180,6 +180,12 @@ MonoBehaviour:
   - {fileID: 2752761060650883659}
   blueDragonLogic: {fileID: 1921884966298013247, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
   arrowDamage: 1
+  groundRadius: 4
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  rayLength: 20
+  playerAnimator: {fileID: 6871196495811593547, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
 --- !u!1 &2752761061138799065
 GameObject:
   m_ObjectHideFlags: 0

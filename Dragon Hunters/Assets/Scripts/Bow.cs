@@ -42,7 +42,7 @@ public class Bow : MonoBehaviour
     private void FixedUpdate()
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        RotateArrowToFaceGround();
+        //RotateArrowToFaceGround();
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
     public void Fire(float chargedPower)
@@ -52,6 +52,7 @@ public class Bow : MonoBehaviour
         Quaternion arrowRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         currentArrow = Instantiate(arrowPrefab, shootingDirection.position, arrowRotation);
+        currentArrow.GetComponent<ArrowLogic>().tension = chargedPower;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
         rb.AddForce(direction * trajectoryPower * chargedPower, ForceMode.Impulse);
@@ -59,38 +60,6 @@ public class Bow : MonoBehaviour
 
 
     }
-    void RotateArrowToFaceGround()
-    {
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        if (currentArrow != null)
-        {
-            Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
 
-            // Check if the arrow is falling (y velocity is negative)
-            if (rb.velocity.y < 0)
-            {
-                // Check the initial direction of the arrow's velocity
-                float upwardAngle = Vector3.Angle(Vector3.up, rb.velocity.normalized);
-
-                // Set a threshold angle (you can adjust this value based on your needs)
-                float rotationThreshold = 30f; // Example threshold of 30 degrees
-
-                // Calculate the rotation based on velocity only if the upward angle is above the threshold
-                if (upwardAngle > rotationThreshold)
-                {
-                    Quaternion rotation = Quaternion.Euler(-2.182f, -61.337f, -180f);
-                    float rotationSpeed = 1.45f;
-                    
-                    
-                    // Set the rotation of the arrow to always point in the direction of motion
-                    currentArrow.transform.rotation = Quaternion.Slerp(currentArrow.transform.rotation, rotation, rotationSpeed * Time.fixedDeltaTime);
-                }
-            }
-        }
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-    }
-    
 
 }

@@ -13,6 +13,7 @@ public class RedDragonLogic : MonoBehaviour
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         enemy = GetComponent<Enemy>();
+        enemy.movementSpeed = 1f * Random.Range(1, 5);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         //animator = enemy.GetComponent<Animator>();
         //rigidBody = enemy.GetComponent<Rigidbody>();
@@ -41,7 +42,7 @@ public class RedDragonLogic : MonoBehaviour
                 enemy.animator.SetBool("CanAttack", false);
 
                 // Set the movement vector
-                enemy.movement = new Vector3(direction.x, 0, direction.z) * 1.5F * Time.fixedDeltaTime;
+                enemy.movement = new Vector3(direction.x, 0, direction.z) * enemy.movementSpeed * Time.fixedDeltaTime;
             }
         }
         else
