@@ -7,7 +7,7 @@ public class HitColliderData : MonoBehaviour
     public Collider[] headColliders;
     public Collider[] chestColliders;
 
-    public int headMultiplier;
+    public float headMultiplier;
     public float chestMultiplier;
 
     private Enemy enemy;
@@ -21,7 +21,7 @@ public class HitColliderData : MonoBehaviour
         enemy = GetComponent<Enemy>();
     }
 
-    public void PassInHit(Collider hit, int damage)
+    public void PassInHit(Collider hit, float damage)
     {
         
         if (hit == null) return;
@@ -29,14 +29,14 @@ public class HitColliderData : MonoBehaviour
         {
             if (hit == headCollider)
             {
-                enemy.GetDamage(damage * headMultiplier);
+                enemy.GetDamage((int)(damage * headMultiplier));
             }
         }
         foreach (Collider chestCollider in chestColliders)
         {
             if (hit == chestCollider)
             {
-                enemy.GetDamage(damage * headMultiplier);
+                enemy.GetDamage((int)(damage * chestMultiplier));
             }
         }
     }

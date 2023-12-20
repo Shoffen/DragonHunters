@@ -56,7 +56,7 @@ public class ArrowLogic : MonoBehaviour
         else if(other.CompareTag("Enemy"))
         {
 
-            other.transform.root.gameObject.GetComponent<HitColliderData>().PassInHit(other, arrowDamage);
+            other.transform.root.gameObject.GetComponent<HitColliderData>().PassInHit(other, arrowDamage * tension);
             StickArrowToEnemy(other.transform);
             
         }

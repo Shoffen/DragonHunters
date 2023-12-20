@@ -184,6 +184,7 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput()
     {
+       
         //--------------------------------------------------------------------------------------------------------------------------------------
         playerAnimator.SetBool("IsGrounded", IsInGroundRadius());
         //--------------------------------------------------------------------------------------------------------------------------------------
@@ -271,13 +272,15 @@ public class PlayerController : MonoBehaviour
                             PlayVFX(effectPurple, effectBlue, 2f, false);
                         }
                         hasSpawnedEffect = false;
+                        if (time >= 1.45)
+                        {
+                            bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f));
+                        }
+                        else
+                        {
+                            bow.Fire(playerAnimator.GetFloat("DrawTension"));
+                        }
                         time = 0;
-
-                        
-                       
-                        
-
-                        bow.Fire(playerAnimator.GetFloat("DrawTension"));
                         releaseArrow.Play();
                         drawTension = 0;
                         playerAnimator.SetFloat("DrawTension", drawTension);
