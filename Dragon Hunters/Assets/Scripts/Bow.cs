@@ -31,7 +31,7 @@ public class Bow : MonoBehaviour
         if (playerAnimator.GetFloat("DrawTension") > 0)
         {
             trajectoryLine.lineRenderer.gameObject.SetActive(true);
-            trajectoryLine.ShowTrajectoryLine(shootingDirection.position, shootingDirection.forward * trajectoryPower * playerAnimator.GetFloat("DrawTension"));
+            trajectoryLine.ShowTrajectoryLine(shootingDirection.position, shootingDirection.forward * trajectoryPower * playerAnimator.GetFloat("DrawTension"), playerAnimator.GetFloat("DrawTension"));
         }
         else
         {

@@ -96,12 +96,13 @@ public class WaveSpawner : MonoBehaviour
                 cameraFollow.isWaveInProgress = true;
                 state = TRIGGER_STATE.ENTERED;
                 GenerateWave();
+                leftWallAnimator.SetBool("Open", false);
+                rightWallAnimator.SetBool("Open", false);
+                leftWallAnimator.SetBool("Close", true);
+                rightWallAnimator.SetBool("Close", true);
             }
         }
-        leftWallAnimator.SetBool("Open", false);
-        rightWallAnimator.SetBool("Open", false);
-        leftWallAnimator.SetBool("Close", true);
-        rightWallAnimator.SetBool("Close", true);
+        
     }
 
     public void GenerateWave()

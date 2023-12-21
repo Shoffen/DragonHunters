@@ -425,7 +425,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ResetJump(float jumpDuration)
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        yield return new WaitForSeconds(jumpDuration + 2f);
+        yield return new WaitForSeconds(jumpDuration + 1f);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         playerAnimator.SetBool("CanJump", true);
         jumpTimer = 0f;
