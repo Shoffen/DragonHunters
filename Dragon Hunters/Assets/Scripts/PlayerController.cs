@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private float jumpTimer = 0f;
     private float drawTension;
     private float time;
+    private bool builtUp;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private GameObject effectBlue;
     private GameObject effectPurple;
@@ -67,6 +68,7 @@ public class PlayerController : MonoBehaviour
     private bool needsToStopBuild = false;
     private Coroutine deactivate;
     private Coroutine buildupCoroutine;
+    private float interpolatedValue;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private enum AIMING_STATE
     {
@@ -191,7 +193,7 @@ public class PlayerController : MonoBehaviour
         if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
         {
             Debug.Log("SOKT REIK");
-            if (playerAnimator.GetBool("CanJump"))
+            if (playerAnimator.GetBool("CanJump") && !builtUp)
             {
                 isJumping = true;
                 StartCoroutine(ResetJump(jumpDuration));
@@ -244,15 +246,18 @@ public class PlayerController : MonoBehaviour
                 {
                     needsToStopBuild = false;
                     time += Time.deltaTime;
+
                     if (deactivate != null)
                     {
                         StopCoroutine(deactivate);
                     }
+
                     drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
                     playerAnimator.SetFloat("DrawTension", drawTension);
 
                     if(time > 1.45f && !hasSpawnedEffect)
                     {
+                        builtUp = true;
                         cameraFollow.needShake = true;
                         effectBlue = Instantiate(blueCircleVFX, this.transform);
                         effectPurple = Instantiate(purpleCircleVFX, this.transform);
@@ -268,8 +273,10 @@ public class PlayerController : MonoBehaviour
                         cameraFollow.needShake = false;
                         if (buildupCoroutine != null)
                         {
+                            builtUp = false;
                             StopCoroutine(buildupCoroutine);
                             PlayVFX(effectPurple, effectBlue, 2f, false);
+
                         }
                         hasSpawnedEffect = false;
                         if (time >= 1.45)
@@ -280,12 +287,14 @@ public class PlayerController : MonoBehaviour
                         {
                             bow.Fire(playerAnimator.GetFloat("DrawTension"));
                         }
+
                         time = 0;
                         releaseArrow.Play();
                         drawTension = 0;
                         playerAnimator.SetFloat("DrawTension", drawTension);
                         playerAnimator.SetTrigger("Shoot");
                         SetPlayerState((int)AIMING_STATE.AIMING);
+
                     }
                     playerAnimator.SetFloat("DrawTension", drawTension);
                 }
@@ -345,6 +354,16 @@ public class PlayerController : MonoBehaviour
                 // Adjust the scale gradually
                 vfxComponentPurple.transform.localScale = Vector3.Lerp(initialScale, new Vector3(0.75f, 0.75f, .75f), t);
                 vfxComponentBlue.transform.localScale = Vector3.Lerp(initialScale, finalScale, t);
+
+                // Get the current value of the "MoveSpeed" parameter
+                float currentMoveSpeed = playerAnimator.GetFloat("MoveSpeed");
+
+                // Interpolate between the current value and 0 with factor 't'
+                interpolatedValue = Mathf.Lerp(currentMoveSpeed, 0, t);
+
+                // Set the interpolated value back to the "MoveSpeed" parameter
+                playerAnimator.SetFloat("MoveSpeed", interpolatedValue);
+
                 // Calculate the interpolation factor for start lifetime
                 float lifetimeT = Mathf.Pow(t, 2); // You can adjust the power for a different scaling effect
 
@@ -479,16 +498,26 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetFloat("MoveSpeed", 0);
         currentMoveX = Mathf.Lerp(currentMoveX, walkingChange.x, Time.deltaTime * ACCELERATION);
         moveAnimationSpeedTarget = Mathf.Lerp(moveAnimationSpeedTarget, walkingChange.magnitude, Time.deltaTime * (ACCELERATION / 2));
+
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        if (NeedBackwards)
+        if (!builtUp)
         {
-            playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget * (-1));
-            movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed / 2 * Time.fixedDeltaTime;
+            if (NeedBackwards)
+            {
+
+                playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget * (-1));
+                movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed / 2 * Time.fixedDeltaTime * (builtUp ? 0 : 1);
+            }
+            else
+            {
+                playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
+                movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed * Time.fixedDeltaTime * (builtUp ? 0 : 1);
+            }
         }
         else
         {
-            playerAnimator.SetFloat("MoveSpeed", moveAnimationSpeedTarget);
-            movement = new Vector3(currentMoveX, 0, 0) * walkingSpeed * Time.fixedDeltaTime;
+            playerAnimator.SetFloat("MoveSpeed", interpolatedValue);
+            movement = Vector3.zero;
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         myRigidbody.MovePosition(myRigidbody.position + movement);
