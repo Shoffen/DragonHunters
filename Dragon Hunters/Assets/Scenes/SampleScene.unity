@@ -2191,6 +2191,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
+--- !u!1 &1759467848 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1023653973087654314, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+  m_PrefabInstance: {fileID: 1022864015535764287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1845225117
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,6 +2674,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1022864016001460139, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: blueFire
+      value: 
+      objectReference: {fileID: 1654736843778140, guid: 78e8b38d431ddef4fa2994a3f2d6e2ff, type: 3}
+    - target: {fileID: 1022864016001460139, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: arrowHead
+      value: 
+      objectReference: {fileID: 1759467848}
+    - target: {fileID: 1022864016001460139, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: tipOfArrow
+      value: 
+      objectReference: {fileID: 1759467848}
+    - target: {fileID: 1022864016001460139, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: blueFireVFX
+      value: 
+      objectReference: {fileID: 1654736843778140, guid: 78e8b38d431ddef4fa2994a3f2d6e2ff, type: 3}
+    - target: {fileID: 1022864016001460139, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
       propertyPath: cameraFollow
       value: 
       objectReference: {fileID: 963194229}
@@ -2708,6 +2729,14 @@ PrefabInstance:
       propertyPath: transparency
       value: 0.4
       objectReference: {fileID: 0}
+    - target: {fileID: 1022864016466552809, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: arrowPrefab
+      value: 
+      objectReference: {fileID: 5297550468705946247, guid: e36ef3d224d7d384d9327162373e1d1c, type: 3}
+    - target: {fileID: 1022864016466552809, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+      propertyPath: blueFireVFX
+      value: 
+      objectReference: {fileID: 1654736843778140, guid: 78e8b38d431ddef4fa2994a3f2d6e2ff, type: 3}
     - target: {fileID: 1022864016466552809, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
       propertyPath: trajectoryPower
       value: 40

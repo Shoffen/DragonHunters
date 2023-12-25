@@ -80,7 +80,10 @@ public class ArrowLogic : MonoBehaviour
     }
     private void RotateArrowToFaceGround()
     {
-       
+        float currentRotationSpeed = 1.45f;
+        float maxRotationSpeed = 10f;
+        float rotationSpeedIncrement = 0.4f;
+
         // Check if the arrow is falling (y velocity is negative)
         if (myBody.velocity.y < 0)
         {
@@ -94,11 +97,13 @@ public class ArrowLogic : MonoBehaviour
             if (upwardAngle > rotationThreshold)
             {
                 Quaternion rotation = Quaternion.Euler(-2.182f, -61.337f, -180f);
-                float rotationSpeed = 1.45f;
 
+                // Increase the rotation speed gradually
+                currentRotationSpeed += rotationSpeedIncrement;
+                currentRotationSpeed = Mathf.Clamp(currentRotationSpeed, 0f, maxRotationSpeed);
 
                 // Set the rotation of the arrow to always point in the direction of motion
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.fixedDeltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, currentRotationSpeed * Time.fixedDeltaTime);
             }
         }
         

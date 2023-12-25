@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AnimationCurve aimPrepareCurve;
     [SerializeField] private MultiAimConstraint[] spineBones;
     [SerializeField] private MultiAimConstraint shoulderBone;
+    [SerializeField] private GameObject arrowHead;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private AudioSource releaseArrow;
     [SerializeField] private AudioSource loadArrow;
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private GameObject blueCircleVFX;
     [SerializeField] private GameObject purpleCircleVFX;
+    [SerializeField] private GameObject blueFireVFX;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private Rigidbody myRigidbody;
     public Bow bow;
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private GameObject effectBlue;
     private GameObject effectPurple;
+    private GameObject effectBlueFire;
     public float destructionTime = 5.0f;
     public float shrinkPower = 1.5f;
     private bool needsToStopBuild = false;
@@ -259,9 +262,13 @@ public class PlayerController : MonoBehaviour
                     {
                         builtUp = true;
                         cameraFollow.needShake = true;
+
+                        effectBlueFire = Instantiate(blueFireVFX, arrowHead.transform);
                         effectBlue = Instantiate(blueCircleVFX, this.transform);
                         effectPurple = Instantiate(purpleCircleVFX, this.transform);
+                        effectBlueFire.GetComponent<ParticleSystem>().Play();
                         PlayVFX(effectPurple, effectBlue, 2f, true);
+
                         hasSpawnedEffect = true;
                     }
                    
@@ -270,22 +277,24 @@ public class PlayerController : MonoBehaviour
                 {
                     if (drawTension != 0)
                     {
+                        Destroy(effectBlueFire);
                         cameraFollow.needShake = false;
                         if (buildupCoroutine != null)
                         {
                             builtUp = false;
                             StopCoroutine(buildupCoroutine);
+
                             PlayVFX(effectPurple, effectBlue, 2f, false);
 
                         }
                         hasSpawnedEffect = false;
                         if (time >= 1.45)
                         {
-                            bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f));
+                            bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f), time);
                         }
                         else
                         {
-                            bow.Fire(playerAnimator.GetFloat("DrawTension"));
+                            bow.Fire(playerAnimator.GetFloat("DrawTension"), time);
                         }
 
                         time = 0;
@@ -338,7 +347,7 @@ public class PlayerController : MonoBehaviour
             float timer = 0f;
             float originalStartLifetimePurple = vfxComponentPurple.main.startLifetime.constant;
             float originalStartLifetimeBlue = vfxComponentBlue.main.startLifetime.constant;
-           
+
             Vector3 initialScale = Vector3.one * 0.1f; // Start from a very small scale
             Vector3 finalScale = Vector3.one;
 
@@ -354,7 +363,6 @@ public class PlayerController : MonoBehaviour
                 // Adjust the scale gradually
                 vfxComponentPurple.transform.localScale = Vector3.Lerp(initialScale, new Vector3(0.75f, 0.75f, .75f), t);
                 vfxComponentBlue.transform.localScale = Vector3.Lerp(initialScale, finalScale, t);
-
                 // Get the current value of the "MoveSpeed" parameter
                 float currentMoveSpeed = playerAnimator.GetFloat("MoveSpeed");
 
@@ -372,7 +380,6 @@ public class PlayerController : MonoBehaviour
                 var mainModuleBlue = vfxComponentBlue.main;
                 mainModulePurple.startLifetime = Mathf.Lerp(0f, originalStartLifetimePurple, lifetimeT);
                 mainModuleBlue.startLifetime = Mathf.Lerp(0f, originalStartLifetimeBlue, lifetimeT);
-
                 yield return null;
             }
             //--------------------------------------------------------------------------------------------------------------------------------------------------------------
