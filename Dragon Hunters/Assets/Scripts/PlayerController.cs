@@ -288,6 +288,9 @@ public class PlayerController : MonoBehaviour
 
                         }
                         hasSpawnedEffect = false;
+
+                        mainCamera.GetComponent<CameraFollow>().ShakeAfterRelease();
+
                         if (time >= 1.45)
                         {
                             bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f), time);

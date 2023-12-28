@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    private const float shakeIntensity = 0.1f;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private Vector3 offset;
     public float smoothing = 5f;
     public float fixedYCoordinate = 1f;
     public float fixedZCoordinate;
-    public float shakeIntensity = 0.1f; 
+    public float currentShakeIntensity = 0.1f; 
     public float shakeIncreaseRate = 0.02f; 
     public float maxShakeIntensity = 0.5f;
     public bool needShake;
     private Vector3 randomShake;
     public bool isWaveInProgress;
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public float shakeDuration = 0.2f;
+    public float shakeMagnitude = 0.3f;
+    private bool released = false;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private Transform target;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -22,21 +27,31 @@ public class CameraFollow : MonoBehaviour
     {
         offset = transform.position - target.position;
         isWaveInProgress = false;
+
     }
+   
+   
     private void FixedUpdate()
     {
+        
         Debug.Log(isWaveInProgress);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (needShake)
         {
             // Gradually increase shake intensity
-            shakeIntensity = Mathf.Clamp(shakeIntensity + shakeIncreaseRate * Time.deltaTime, 0f, maxShakeIntensity);
+            currentShakeIntensity = Mathf.Clamp(currentShakeIntensity + shakeIncreaseRate * Time.deltaTime, 0f, maxShakeIntensity);
 
             // Calculate the random shake offset
-            randomShake = new Vector3(Random.Range(-shakeIntensity, shakeIntensity), 0f, Random.Range(-shakeIntensity, shakeIntensity));
+            randomShake = new Vector3(Random.Range(-currentShakeIntensity, currentShakeIntensity), 0f, Random.Range(-currentShakeIntensity, currentShakeIntensity));
+        }
+        else if(released)
+        {
+            // Calculate the random shake offset
+            randomShake = new Vector3(Random.Range(-0.45f, 0.45f), 0f, Random.Range(-0.45f, 0.45f));
         }
         else
         {
+            currentShakeIntensity = shakeIntensity;
             randomShake = Vector3.zero;
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,5 +75,18 @@ public class CameraFollow : MonoBehaviour
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
+    public void ShakeAfterRelease()
+    {
+        released = true;
+        StartCoroutine(ResetRelease());
+    }
+    IEnumerator ResetRelease()
+    {
+        yield return new WaitForSeconds(0.25f);
+        released = false;
+       
+    }
+
+
 
 }

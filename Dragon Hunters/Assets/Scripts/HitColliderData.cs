@@ -6,7 +6,7 @@ public class HitColliderData : MonoBehaviour
 {
     public Collider[] headColliders;
     public Collider[] chestColliders;
-
+    public Collider boxCollider;
     public float headMultiplier;
     public float chestMultiplier;
 
@@ -38,6 +38,23 @@ public class HitColliderData : MonoBehaviour
             {
                 enemy.GetDamage((int)(damage * chestMultiplier));
             }
+        }
+    }
+    public void DisableColliders()
+    {
+        foreach (Collider headCollider in headColliders)
+        {
+            headCollider.enabled = false;
+        }
+
+        foreach (Collider chestCollider in chestColliders)
+        {
+            chestCollider.enabled = false;
+        }
+
+        if (boxCollider != null)
+        {
+            boxCollider.enabled = false;
         }
     }
 }

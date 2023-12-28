@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     public GameObject damageLabel;
     public Transform damageLabelSpawn;
     public float movementSpeed;
+    private HitColliderData colliderData;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
@@ -53,6 +54,10 @@ public class Enemy : MonoBehaviour
             GameObject newDamageLabel = Instantiate(damageLabel, damageLabelSpawn.position, damageLabel.transform.rotation);
 
             newDamageLabel.GetComponent<DamageLabel>().hitDamage = damage;
+
+            rigidBody.isKinematic = true;
+            rigidBody.GetComponent<HitColliderData>().DisableColliders();
+
             StartCoroutine(Vanish());
         }
         if (!animator.GetBool("IsDead"))

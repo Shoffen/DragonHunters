@@ -51,7 +51,7 @@ public class WaveSpawner : MonoBehaviour
             //spawn an enemy
             if (enemiesToSpawn.Count > 0)
             {
-                GameObject enemy = (GameObject)Instantiate(enemiesToSpawn[0], GetSpawnPosition().position, Quaternion.identity); // spawn first enemy in our list
+                GameObject enemy = (GameObject)Instantiate(enemiesToSpawn[0], new Vector3(GetSpawnPosition().position.x, GetSpawnPosition().position.y, 0), Quaternion.identity); // spawn first enemy in our list
                 enemiesToSpawn.RemoveAt(0); // and remove it
                 spawnedEnemies.Add(enemy);
                 time = 0f;
