@@ -111,42 +111,7 @@ public class ArrowLogic : MonoBehaviour
 
 
     }
-    /*private bool NeedToRotate()
-    {
-        //Cast a ray downward from the GameObject's position
-        Ray ray = new Ray(transform.position, Vector3.down);
-        RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, rayLength))
-        {
-            // Get the normal of the surface the ray hits
-            Vector3 groundNormal = hit.normal;
-
-            // Calculate the angle between the GameObject's up vector and the ground normal
-            float angleToGround = Vector3.Angle(transform.up, groundNormal);
-
-            // Now you have the angle to the ground in degrees
-            Debug.Log("Angle to Ground: " + angleToGround);
-
-            // Visualize the ray for debugging
-            Debug.DrawRay(transform.position, Vector3.down * rayLength, Color.green);
-
-            if (playerAnimator.GetFloat("DrawTension") < 0.75f)
-            {
-                return true;
-            }
-            else
-            {
-                if (angleToGround <= 80f)
-                {
-                    return true;
-                }
-            }
-            
-        }
-
-        return false;
-    }*/
 
 
 
