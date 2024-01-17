@@ -15,6 +15,7 @@ public class ArrowLogic : MonoBehaviour
     public LayerMask groundLayer;
     public float rayLength;
     [SerializeField] private Animator playerAnimator;
+    [SerializeField] private PlayerController playerController;
     public float tension;
 
     private bool needToRotate;
@@ -28,6 +29,7 @@ public class ArrowLogic : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         myBody = GetComponent<Rigidbody>();
        
     }
@@ -55,10 +57,8 @@ public class ArrowLogic : MonoBehaviour
         }
         else if(other.CompareTag("Enemy"))
         {
-
             other.transform.root.gameObject.GetComponent<HitColliderData>().PassInHit(other, arrowDamage * tension);
             StickArrowToEnemy(other.transform);
-            
         }
         else
         {

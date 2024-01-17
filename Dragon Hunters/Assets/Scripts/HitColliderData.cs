@@ -12,8 +12,7 @@ public class HitColliderData : MonoBehaviour
 
     private Enemy enemy;
 
-   
-   
+
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +24,9 @@ public class HitColliderData : MonoBehaviour
     {
         
         if (hit == null) return;
+
+        
+
         foreach (Collider headCollider in headColliders)
         {
             if (hit == headCollider)

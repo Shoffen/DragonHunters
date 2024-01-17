@@ -25,10 +25,10 @@ public class TrajectoryLine : MonoBehaviour
         Vector3[] lineRendererPoints = CalculateTrajectoryLine(startPoint, startVelocity, timeStep);
 
         // Check for collisions with the target object
-        //int collisionIndex = CheckCollisionIndex(lineRendererPoints, targetObject);
+        int collisionIndex = CheckCollisionIndex(lineRendererPoints, targetObject);
 
-        // Set positions based on the collision index
-        lineRenderer.positionCount = 100 + 1;
+        //Set positions based on the collision index
+        lineRenderer.positionCount = collisionIndex + 1;
         lineRenderer.SetPositions(lineRendererPoints);
 
         Color lineColor = new Color(startColor.r, startColor.g, startColor.b, transparency / tension);

@@ -6,8 +6,6 @@ public class RedDragonLogic : MonoBehaviour
 {
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private Enemy enemy;
-    private Animator animator;
-    private Rigidbody rigidBody;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     void Start()
     {
@@ -24,6 +22,11 @@ public class RedDragonLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(enemy.playSound)
+        {
+            enemy.soundSystem.RedGotHit.Play();
+            enemy.playSound = false;
+        }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (enemy.IsInRadiusToFollow() && !(enemy.animator.GetBool("IsDead")))
         {
@@ -51,8 +54,10 @@ public class RedDragonLogic : MonoBehaviour
             enemy.animator.SetBool("CanFollow", false);
             enemy.movement = Vector3.zero;
         }
+        
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
+    
    
 
 

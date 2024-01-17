@@ -16,11 +16,14 @@ public class Enemy : MonoBehaviour
     public FloatValue maxHealth;
     public GameObject damageLabel;
     public Transform damageLabelSpawn;
+    public SoundSystem soundSystem;
     public float movementSpeed;
+    public bool playSound = false;
     private HitColliderData colliderData;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
+        soundSystem = GameObject.Find("SoundSystem").GetComponent<SoundSystem>();
         playerTarget = GameObject.Find("Player").transform;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         healthBar.SetMaxHealth(maxHealth.value);
@@ -46,6 +49,7 @@ public class Enemy : MonoBehaviour
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         healthBar.ApplyDamage(damage);
+        playSound = true;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (IsDead(healthBar) && !(animator.GetBool("IsDead")))
         {
@@ -109,4 +113,5 @@ public class Enemy : MonoBehaviour
         rigidBody.rotation = Quaternion.Lerp(rigidBody.rotation, target, Time.deltaTime * 6);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
+ 
 }

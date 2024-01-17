@@ -420,6 +420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fbbb998b1496f49b3e1d8e42a02a29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundSystem: {fileID: 4010263694779993777, guid: 509f4f23b0e84d648a9c4c47116fb2f6, type: 3}
 --- !u!114 &2252548969118728880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,6 +465,7 @@ MonoBehaviour:
   damageLabel: {fileID: 8446234353522114834, guid: 182ac5142067d9d41add9d215b280a41, type: 3}
   damageLabelSpawn: {fileID: 3761934551933767051}
   movementSpeed: 0
+  playSound: 0
 --- !u!136 &9148454036964225045
 CapsuleCollider:
   m_ObjectHideFlags: 0

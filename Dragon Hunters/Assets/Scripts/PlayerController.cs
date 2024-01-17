@@ -22,8 +22,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private MultiAimConstraint shoulderBone;
     [SerializeField] private GameObject arrowHead;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    [SerializeField] private AudioSource releaseArrow;
-    [SerializeField] private AudioSource loadArrow;
+    [SerializeField] private SoundSystem soundSystem;
+    private AudioSource releaseArrow;
+    private AudioSource loadArrow;
+    private AudioSource redGotHit;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private float jumpForce;
     [SerializeField] private float jumpDuration;
@@ -62,6 +64,7 @@ public class PlayerController : MonoBehaviour
     private float drawTension;
     private float time;
     private bool builtUp;
+    private bool loading;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private GameObject effectBlue;
     private GameObject effectPurple;
@@ -98,14 +101,34 @@ public class PlayerController : MonoBehaviour
         SetAimingState(AIMING_STATE.AIMING, true);
         mainCamera = Camera.main;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
+        loading = true;
     }
 
     private void Update()
     {
+        if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
+        {
+            if (!soundSystem.LoadArrow.isPlaying && loading)
+            {
+                soundSystem.LoadArrow.Play();
+            }
+            if(playerAnimator.GetFloat("DrawTension") == 1)
+            {
+                loading = false;
+            }
+            else
+            {
+                loading = true;
+            }
+        }
+        else
+        {
+            if(soundSystem.LoadArrow.isPlaying)
+            {
+                soundSystem.LoadArrow.Stop();
+            }
+        }
+    
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         GetInput();
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -198,6 +221,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("SOKT REIK");
             if (playerAnimator.GetBool("CanJump") && !builtUp)
             {
+                soundSystem.Jump.Play();
                 isJumping = true;
                 StartCoroutine(ResetJump(jumpDuration));
             }
@@ -257,8 +281,7 @@ public class PlayerController : MonoBehaviour
 
                     drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
                     playerAnimator.SetFloat("DrawTension", drawTension);
-
-                    if(time > 1.45f && !hasSpawnedEffect)
+                    if (time > 1.45f && !hasSpawnedEffect)
                     {
                         builtUp = true;
                         cameraFollow.needShake = true;
@@ -301,7 +324,7 @@ public class PlayerController : MonoBehaviour
                         }
 
                         time = 0;
-                        releaseArrow.Play();
+                        soundSystem.ReleaseArrow.Play();
                         drawTension = 0;
                         playerAnimator.SetFloat("DrawTension", drawTension);
                         playerAnimator.SetTrigger("Shoot");
@@ -311,6 +334,7 @@ public class PlayerController : MonoBehaviour
                     playerAnimator.SetFloat("DrawTension", drawTension);
                 }
                 return;
+
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
@@ -555,6 +579,7 @@ public class PlayerController : MonoBehaviour
         {
             if (col.CompareTag("Ground"))
             {
+               
                 // The "GROUND" object is within the specified radius
                 isInRadius = true;
                 // You can perform additional actions here if needed

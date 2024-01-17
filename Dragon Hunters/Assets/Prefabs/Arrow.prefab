@@ -302,7 +302,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   rayLength: 20
-  playerAnimator: {fileID: 6871196495811593547, guid: fb88a586130d8734f93a61ff3aaaf643, type: 3}
+  playerAnimator: {fileID: 1013552461229950967, guid: 068de2c7b3afe0f45be22a3b2251d00d, type: 3}
+  playerController: {fileID: 6879891911689905431, guid: 068de2c7b3afe0f45be22a3b2251d00d, type: 3}
   tension: 0
 --- !u!96 &2620047842450413074
 TrailRenderer:
