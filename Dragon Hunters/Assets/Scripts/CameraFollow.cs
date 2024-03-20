@@ -34,7 +34,7 @@ public class CameraFollow : MonoBehaviour
     private void FixedUpdate()
     {
         
-        Debug.Log(isWaveInProgress);
+        //Debug.Log(isWaveInProgress);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (needShake)
         {

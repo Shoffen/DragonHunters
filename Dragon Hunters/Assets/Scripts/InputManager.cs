@@ -8,7 +8,8 @@ public class InputManager : MonoBehaviour
         INTERACTION,
         AIMING,
         SHOOTING,
-        JUMPING
+        JUMPING,
+        EXIT
         //SHOOT
     }
     public enum AXIS

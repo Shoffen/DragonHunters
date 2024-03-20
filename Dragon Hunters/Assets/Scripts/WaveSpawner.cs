@@ -21,6 +21,8 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField] CameraFollow cameraFollow;
     private Animator leftWallAnimator;
     private Animator rightWallAnimator;
+    
+    private bool waveIncremented = false;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Start is called before the first frame update
@@ -31,6 +33,7 @@ public class WaveSpawner : MonoBehaviour
     }
     private void Start()
     {
+        
         leftWallAnimator = leftWall.GetComponent<Animator>();
         rightWallAnimator = rightWall.GetComponent<Animator>();
     }
@@ -67,6 +70,7 @@ public class WaveSpawner : MonoBehaviour
                 if (enemy == null)
                 {
                     enemiesToRemove.Add(enemy);
+                    
                 }
             }
 
@@ -77,11 +81,18 @@ public class WaveSpawner : MonoBehaviour
 
             if(spawnedEnemies.Count == 0 && enemiesToSpawn.Count == 0)
             {
-                cameraFollow.isWaveInProgress = false;
+                if (!waveIncremented) // Check if the wave hasn't been incremented yet
+                {
+                    currWave += 1; // Increment the wave
+                    waveIncremented = true; // Set the flag to true to indicate that the wave has been incremented
+                    GenerateWave();
+                }
+
+                /*cameraFollow.isWaveInProgress = false;
                 leftWallAnimator.SetBool("Open", true);
                 rightWallAnimator.SetBool("Open", true);
                 leftWallAnimator.SetBool("Close", false);
-                rightWallAnimator.SetBool("Close", false);
+                rightWallAnimator.SetBool("Close", false);*/
             }
         }
         
@@ -96,6 +107,7 @@ public class WaveSpawner : MonoBehaviour
                 cameraFollow.isWaveInProgress = true;
                 state = TRIGGER_STATE.ENTERED;
                 GenerateWave();
+                currWave = 1;
                 leftWallAnimator.SetBool("Open", false);
                 rightWallAnimator.SetBool("Open", false);
                 leftWallAnimator.SetBool("Close", true);
@@ -110,23 +122,13 @@ public class WaveSpawner : MonoBehaviour
         waveValue = currWave * 100;
 
         GenerateEnemies();
-
+        waveIncremented = false;
        
         //waveTimer = waveDuration; // wave duration is read only
     }
 
     public void GenerateEnemies()
     {
-        // Create a temporary list of enemies to generate
-        // 
-        // in a loop grab a random enemy 
-        // see if we can afford it
-        // if we can, add it to our list, and deduct the cost.
-
-        // repeat... 
-
-        //  -> if we have no points left, leave the loop
-
         List<GameObject> generatedEnemies = new List<GameObject>();
 
         while (waveValue > 0 || generatedEnemies.Count < 50)
@@ -144,7 +146,12 @@ public class WaveSpawner : MonoBehaviour
                 break;
             }
         }
-        enemiesToSpawn.Clear();
+        enemiesToSpawn.Clear(); if (!waveIncremented) // Check if the wave hasn't been incremented yet
+        {
+            currWave += 1; // Increment the wave
+            waveIncremented = true; // Set the flag to true to indicate that the wave has been incremented
+            GenerateEnemies();
+        }
         enemiesToSpawn = generatedEnemies;
     }
     private Transform GetSpawnPosition()

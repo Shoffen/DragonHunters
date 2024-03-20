@@ -18,6 +18,10 @@ public class TrajectoryLine : MonoBehaviour
         lineMaterial = new Material(Shader.Find("Transparent/Diffuse"));
         
     }
+    private void Update()
+    {
+        Debug.Log(lineMaterial.name);
+    }
 
     public void ShowTrajectoryLine(Vector3 startPoint, Vector3 startVelocity, float tension)
     {

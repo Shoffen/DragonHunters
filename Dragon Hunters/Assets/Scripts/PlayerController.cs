@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -226,6 +227,10 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(ResetJump(jumpDuration));
             }
 
+        }
+        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.EXIT))
+        {
+            SceneManager.LoadScene("Menu");
         }
         //--------------------------------------------------------------------------------------------------------------------------------------
         if (!playerAnimator.GetBool("IsJumping"))
@@ -478,7 +483,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ResetJump(float jumpDuration)
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        yield return new WaitForSeconds(jumpDuration + 1f);
+        yield return new WaitForSeconds(jumpDuration + 1.45f);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         playerAnimator.SetBool("CanJump", true);
         jumpTimer = 0f;
