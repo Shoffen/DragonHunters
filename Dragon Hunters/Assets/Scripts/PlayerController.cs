@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public int level = 1;
+    public int health = 100;
+    private bool menu = false;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private const float ACCELERATION = 12f;
     private const float AIMING_Y_OFFSET_TARGET = 80f;
@@ -46,7 +49,7 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed;
     private Vector3 walkingChange;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private Camera mainCamera;
+    public Camera mainCamera;
     public Transform targetTransform;
     public LayerMask mouseAimMask;
     public LayerMask groundLayer;
@@ -107,6 +110,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        
+
+
+        Debug.Log(menu);
+        Debug.Log(SceneManager.GetActiveScene().name);
         if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
         {
             if (!soundSystem.LoadArrow.isPlaying && loading)
@@ -213,133 +221,153 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput()
     {
-       
-        //--------------------------------------------------------------------------------------------------------------------------------------
-        playerAnimator.SetBool("IsGrounded", IsInGroundRadius());
-        //--------------------------------------------------------------------------------------------------------------------------------------
-        if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
+        if (!menu)
         {
-            Debug.Log("SOKT REIK");
-            if (playerAnimator.GetBool("CanJump") && !builtUp)
+            //--------------------------------------------------------------------------------------------------------------------------------------
+            playerAnimator.SetBool("IsGrounded", IsInGroundRadius());
+            //--------------------------------------------------------------------------------------------------------------------------------------
+            if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
             {
-                soundSystem.Jump.Play();
-                isJumping = true;
-                StartCoroutine(ResetJump(jumpDuration));
-            }
+                Debug.Log("SOKT REIK");
+                if (playerAnimator.GetBool("CanJump") && !builtUp)
+                {
+                    soundSystem.Jump.Play();
+                    isJumping = true;
+                    StartCoroutine(ResetJump(jumpDuration));
+                }
 
+            }
         }
+
         if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.EXIT))
         {
-            SceneManager.LoadScene("Menu");
+            if (menu)
+            {
+                // Unload the menu scene after a short delay
+                StartCoroutine(UnloadMenuSceneAfterDelay());
+            }
+            else
+            {
+                // Load the menu scene additively
+                SceneManager.LoadScene("Menu", LoadSceneMode.Additive);
+                menu = true;
+            }
         }
-        //--------------------------------------------------------------------------------------------------------------------------------------
-        if (!playerAnimator.GetBool("IsJumping"))
-        {
-            playerAnimator.SetBool("IsFalling", !IsInGroundRadius());
-        }
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        if (playerAnimator.GetBool("IsFalling"))
-        {
-
-            jumpTimer += Time.fixedDeltaTime;
-            float jumpProgress = jumpTimer / jumpDuration;
-
-
-            Vector2 newVelocity = Vector2.Lerp(myRigidbody.velocity, Vector2.down * jumpForce, jumpProgress);
 
 
-            //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
-        }
-        //--------------------------------------------------------------------------------------------------------------------------------------
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+
+
+        if (!menu)
         {
-            targetTransform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z - 2f);
-        }
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
-        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-        if (isAimStateChangeing)
-        {
-            return;
-        }
-        switch (aimingState)
-        {
-           
-            case AIMING_STATE.IDLE:
+            //--------------------------------------------------------------------------------------------------------------------------------------
+            if (!playerAnimator.GetBool("IsJumping"))
+            {
+                playerAnimator.SetBool("IsFalling", !IsInGroundRadius());
+            }
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            if (playerAnimator.GetBool("IsFalling"))
+            {
+
+                jumpTimer += Time.fixedDeltaTime;
+                float jumpProgress = jumpTimer / jumpDuration;
+
+
+                Vector2 newVelocity = Vector2.Lerp(myRigidbody.velocity, Vector2.down * jumpForce, jumpProgress);
+
+
+                //Debug.Log("Final velocity: " + myRigidbody.velocity.y);
+            }
+            //--------------------------------------------------------------------------------------------------------------------------------------
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+            {
+                targetTransform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z - 2f);
+            }
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            walkingChange = playerInput.GetAxis(InputManager.AXIS.MOVE);
+            //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+            if (isAimStateChangeing)
+            {
                 return;
-            case AIMING_STATE.AIMING:
-                playerAnimator.SetLayerWeight(1, 1);
-                return;
-            case AIMING_STATE.CHARGING:
-                if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
-                {
-                    needsToStopBuild = false;
-                    time += Time.deltaTime;
+            }
+            switch (aimingState)
+            {
 
-                    if (deactivate != null)
+                case AIMING_STATE.IDLE:
+                    return;
+                case AIMING_STATE.AIMING:
+                    playerAnimator.SetLayerWeight(1, 1);
+                    return;
+                case AIMING_STATE.CHARGING:
+                    if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
                     {
-                        StopCoroutine(deactivate);
-                    }
+                        needsToStopBuild = false;
+                        time += Time.deltaTime;
 
-                    drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
-                    playerAnimator.SetFloat("DrawTension", drawTension);
-                    if (time > 1.45f && !hasSpawnedEffect)
-                    {
-                        builtUp = true;
-                        cameraFollow.needShake = true;
-
-                        effectBlueFire = Instantiate(blueFireVFX, arrowHead.transform);
-                        effectBlue = Instantiate(blueCircleVFX, this.transform);
-                        effectPurple = Instantiate(purpleCircleVFX, this.transform);
-                        effectBlueFire.GetComponent<ParticleSystem>().Play();
-                        PlayVFX(effectPurple, effectBlue, 2f, true);
-
-                        hasSpawnedEffect = true;
-                    }
-                   
-                }
-                else
-                {
-                    if (drawTension != 0)
-                    {
-                        Destroy(effectBlueFire);
-                        cameraFollow.needShake = false;
-                        if (buildupCoroutine != null)
+                        if (deactivate != null)
                         {
-                            builtUp = false;
-                            StopCoroutine(buildupCoroutine);
-
-                            PlayVFX(effectPurple, effectBlue, 2f, false);
-
-                        }
-                        hasSpawnedEffect = false;
-
-                        mainCamera.GetComponent<CameraFollow>().ShakeAfterRelease();
-
-                        if (time >= 1.45)
-                        {
-                            bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f), time);
-                        }
-                        else
-                        {
-                            bow.Fire(playerAnimator.GetFloat("DrawTension"), time);
+                            StopCoroutine(deactivate);
                         }
 
-                        time = 0;
-                        soundSystem.ReleaseArrow.Play();
-                        drawTension = 0;
+                        drawTension = Mathf.Clamp01(drawTension + Time.deltaTime);
                         playerAnimator.SetFloat("DrawTension", drawTension);
-                        playerAnimator.SetTrigger("Shoot");
-                        SetPlayerState((int)AIMING_STATE.AIMING);
+                        if (time > 1.45f && !hasSpawnedEffect)
+                        {
+                            builtUp = true;
+                            cameraFollow.needShake = true;
+
+                            effectBlueFire = Instantiate(blueFireVFX, arrowHead.transform);
+                            effectBlue = Instantiate(blueCircleVFX, this.transform);
+                            effectPurple = Instantiate(purpleCircleVFX, this.transform);
+                            effectBlueFire.GetComponent<ParticleSystem>().Play();
+                            PlayVFX(effectPurple, effectBlue, 2f, true);
+
+                            hasSpawnedEffect = true;
+                        }
 
                     }
-                    playerAnimator.SetFloat("DrawTension", drawTension);
-                }
-                return;
+                    else
+                    {
+                        if (drawTension != 0)
+                        {
+                            Destroy(effectBlueFire);
+                            cameraFollow.needShake = false;
+                            if (buildupCoroutine != null)
+                            {
+                                builtUp = false;
+                                StopCoroutine(buildupCoroutine);
 
+                                PlayVFX(effectPurple, effectBlue, 2f, false);
+
+                            }
+                            hasSpawnedEffect = false;
+
+                            mainCamera.GetComponent<CameraFollow>().ShakeAfterRelease();
+
+                            if (time >= 1.45)
+                            {
+                                bow.Fire(playerAnimator.GetFloat("DrawTension") * Mathf.Clamp(time - 1.45f, 1, 5f), time);
+                            }
+                            else
+                            {
+                                bow.Fire(playerAnimator.GetFloat("DrawTension"), time);
+                            }
+
+                            time = 0;
+                            soundSystem.ReleaseArrow.Play();
+                            drawTension = 0;
+                            playerAnimator.SetFloat("DrawTension", drawTension);
+                            playerAnimator.SetTrigger("Shoot");
+                            SetPlayerState((int)AIMING_STATE.AIMING);
+
+                        }
+                        playerAnimator.SetFloat("DrawTension", drawTension);
+                    }
+                    return;
+
+            }
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
@@ -593,6 +621,42 @@ public class PlayerController : MonoBehaviour
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         return isInRadius;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+    IEnumerator UnloadMenuSceneAfterDelay()
+    {
+        yield return null; // Wait for one frame to ensure the menu scene is fully loaded
+
+        // Unload the menu scene
+        SceneManager.UnloadSceneAsync("Menu");
+        menu = false;
+    }
+    public void SavePlayer()
+    {
+        SaveSystem.SavePlayer(this);
+    }
+    public void LoadPlayer()
+    {
+        PlayerData data = SaveSystem.LoadPlayer();
+
+        level = data.level;
+        health = data.health;
+
+        Vector3 position;
+
+        position.x = data.position[0];
+        position.y = data.position[1];
+        position.z = data.position[2];
+        transform.position = position;
+
+        Vector3 cameraPosition;
+
+        cameraPosition.x = data.cameraPosition[0];
+        cameraPosition.y = data.cameraPosition[1];
+        cameraPosition.z = data.cameraPosition[2];
+
+        mainCamera.transform.position = cameraPosition;
+
+
     }
 
 

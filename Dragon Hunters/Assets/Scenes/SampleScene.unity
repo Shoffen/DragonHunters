@@ -21598,6 +21598,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 325608554}
     - target: {fileID: 6879891911689905431, guid: 068de2c7b3afe0f45be22a3b2251d00d, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 963194227}
+    - target: {fileID: 6879891911689905431, guid: 068de2c7b3afe0f45be22a3b2251d00d, type: 3}
       propertyPath: soundSystem
       value: 
       objectReference: {fileID: 1825114898}
