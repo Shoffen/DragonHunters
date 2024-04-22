@@ -113,5 +113,5 @@ public class Enemy : MonoBehaviour
         rigidBody.rotation = Quaternion.Lerp(rigidBody.rotation, target, Time.deltaTime * 6);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
- 
+    
 }

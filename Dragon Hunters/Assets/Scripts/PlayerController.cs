@@ -79,6 +79,9 @@ public class PlayerController : MonoBehaviour
     private Coroutine deactivate;
     private Coroutine buildupCoroutine;
     private float interpolatedValue;
+    public WaveSpawner waveSpawner;
+    public List<GameObject> remainingEnemies;
+    public List<GameObject> leftToSpawnEnemies;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private enum AIMING_STATE
     {
@@ -106,15 +109,17 @@ public class PlayerController : MonoBehaviour
         mainCamera = Camera.main;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         loading = true;
+        remainingEnemies = waveSpawner.spawnedEnemies;
+        leftToSpawnEnemies = waveSpawner.enemiesToSpawn;
     }
-
+   
     private void Update()
     {
-        
 
+        remainingEnemies = waveSpawner.spawnedEnemies;
+        leftToSpawnEnemies = waveSpawner.enemiesToSpawn;
+        //Debug.Log(remainingEnemies.Count);
 
-        Debug.Log(menu);
-        Debug.Log(SceneManager.GetActiveScene().name);
         if (playerInput.IsButtonHeld(InputManager.PLAYER_ACTION.SHOOTING))
         {
             if (!soundSystem.LoadArrow.isPlaying && loading)
@@ -228,7 +233,7 @@ public class PlayerController : MonoBehaviour
             //--------------------------------------------------------------------------------------------------------------------------------------
             if (playerInput.ListenForClick(InputManager.PLAYER_ACTION.JUMPING))
             {
-                Debug.Log("SOKT REIK");
+                //Debug.Log("SOKT REIK");
                 if (playerAnimator.GetBool("CanJump") && !builtUp)
                 {
                     soundSystem.Jump.Play();
@@ -630,34 +635,9 @@ public class PlayerController : MonoBehaviour
         SceneManager.UnloadSceneAsync("Menu");
         menu = false;
     }
-    public void SavePlayer()
-    {
-        SaveSystem.SavePlayer(this);
-    }
-    public void LoadPlayer()
-    {
-        PlayerData data = SaveSystem.LoadPlayer();
-
-        level = data.level;
-        health = data.health;
-
-        Vector3 position;
-
-        position.x = data.position[0];
-        position.y = data.position[1];
-        position.z = data.position[2];
-        transform.position = position;
-
-        Vector3 cameraPosition;
-
-        cameraPosition.x = data.cameraPosition[0];
-        cameraPosition.y = data.cameraPosition[1];
-        cameraPosition.z = data.cameraPosition[2];
-
-        mainCamera.transform.position = cameraPosition;
+    
 
 
-    }
 
 
 }

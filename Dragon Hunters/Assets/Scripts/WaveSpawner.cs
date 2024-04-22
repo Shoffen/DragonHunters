@@ -18,10 +18,10 @@ public class WaveSpawner : MonoBehaviour
     private TRIGGER_STATE state;
     public GameObject leftWall;
     public GameObject rightWall;
-    [SerializeField] CameraFollow cameraFollow;
+    public CameraFollow cameraFollow;
     private Animator leftWallAnimator;
     private Animator rightWallAnimator;
-    
+    public BoxCollider boxCollider;
     private bool waveIncremented = false;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public class WaveSpawner : MonoBehaviour
     }
     private void Start()
     {
-        
+        boxCollider = GetComponent<BoxCollider>();
         leftWallAnimator = leftWall.GetComponent<Animator>();
         rightWallAnimator = rightWall.GetComponent<Animator>();
     }
@@ -81,18 +81,19 @@ public class WaveSpawner : MonoBehaviour
 
             if(spawnedEnemies.Count == 0 && enemiesToSpawn.Count == 0)
             {
-                if (!waveIncremented) // Check if the wave hasn't been incremented yet
+                /*if (!waveIncremented) // Check if the wave hasn't been incremented yet
                 {
                     currWave += 1; // Increment the wave
                     waveIncremented = true; // Set the flag to true to indicate that the wave has been incremented
                     GenerateWave();
-                }
+                }*/
 
-                /*cameraFollow.isWaveInProgress = false;
+                cameraFollow.isWaveInProgress = false;
                 leftWallAnimator.SetBool("Open", true);
                 rightWallAnimator.SetBool("Open", true);
                 leftWallAnimator.SetBool("Close", false);
-                rightWallAnimator.SetBool("Close", false);*/
+                rightWallAnimator.SetBool("Close", false);
+                
             }
         }
         
@@ -112,8 +113,10 @@ public class WaveSpawner : MonoBehaviour
                 rightWallAnimator.SetBool("Open", false);
                 leftWallAnimator.SetBool("Close", true);
                 rightWallAnimator.SetBool("Close", true);
+                boxCollider.enabled = false;
             }
         }
+        
         
     }
 
@@ -146,18 +149,24 @@ public class WaveSpawner : MonoBehaviour
                 break;
             }
         }
-        enemiesToSpawn.Clear(); if (!waveIncremented) // Check if the wave hasn't been incremented yet
-        {
-            currWave += 1; // Increment the wave
-            waveIncremented = true; // Set the flag to true to indicate that the wave has been incremented
-            GenerateEnemies();
-        }
-        enemiesToSpawn = generatedEnemies;
+
+        enemiesToSpawn.Clear(); // Clear the list
+        enemiesToSpawn = generatedEnemies; // Assign the new list of enemies to spawn
     }
+
     private Transform GetSpawnPosition()
     {
         return spawnLocation[(Random.Range(0, spawnLocation.Length))];
     }
+    public int GetCount()
+    {
+        return this.enemiesToSpawn.Count;
+    }
+    public List<GameObject> GetLeftToSpawnEnemies()
+    {
+        return enemiesToSpawn;
+    }
+
 }
 
 

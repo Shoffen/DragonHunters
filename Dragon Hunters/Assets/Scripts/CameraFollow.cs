@@ -22,11 +22,12 @@ public class CameraFollow : MonoBehaviour
     private void Start()
     {
         offset = transform.position - (target != null ? target.position : Vector3.zero);
-        isWaveInProgress = false;
+        
     }
 
     private void FixedUpdate()
     {
+        
         if (target != null)
         {
             if (needShake)
@@ -43,9 +44,15 @@ public class CameraFollow : MonoBehaviour
                 currentShakeIntensity = shakeIntensity;
                 randomShake = Vector3.zero;
             }
-
-            Vector3 targetCamPos = new Vector3(target.position.x, fixedYCoordinate, fixedZCoordinate) + offset + randomShake;
-            transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
+            if (!isWaveInProgress)
+            {
+                Vector3 targetCamPos = new Vector3(target.position.x, fixedYCoordinate, fixedZCoordinate) + offset + randomShake;
+                transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
+            }
+            else
+            {
+                return;
+            }
         }
         else
         {

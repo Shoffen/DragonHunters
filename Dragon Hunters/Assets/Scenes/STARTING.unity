@@ -10321,7 +10321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f3d7127b7ffa440bc6e7c07aa6f8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothing: 12
+  smoothing: 5
   fixedYCoordinate: -0.7
   fixedZCoordinate: 0
   currentShakeIntensity: 0.1
@@ -11055,7 +11055,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -19047,7 +19047,6 @@ MonoBehaviour:
   leftWall: {fileID: 1499968158}
   rightWall: {fileID: 1631874543}
   cameraFollow: {fileID: 963194229}
-  boxCollider: {fileID: 1946247434}
 --- !u!65 &1946247434
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20338,10 +20337,6 @@ PrefabInstance:
     - target: {fileID: 1921884966408682013, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
       propertyPath: m_Name
       value: BlueDragon
-      objectReference: {fileID: 0}
-    - target: {fileID: 1921884966408682013, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1921884966408815933, guid: 328dcf7d3523ed043b832ca165efa7e7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
