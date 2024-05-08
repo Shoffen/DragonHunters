@@ -119,8 +119,15 @@ public class MainMenu : MonoBehaviour
                 playerController.mainCamera.transform.position = cameraPosition;
 
                 GameObject[] existingEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+                List<GameObject> blueDragon = new List<GameObject>();
+                Debug.Log("RAAAAAAAAAADOOOOOOOOOOOOOOOOOOOM TIEK:   " + existingEnemies.Length);
+                
                 foreach (GameObject enemy in existingEnemies)
                 {
+                    if(enemy.name.Contains("BlueDragon"))
+                    {
+                        blueDragon.Add(enemy);
+                    }
                     Destroy(enemy);
                 }
 
@@ -140,7 +147,7 @@ public class MainMenu : MonoBehaviour
 
                     
                 }
-
+                
                 foreach (EnemyData enemyData in playerData.remainingEnemiesData)
                 {
                     GameObject enemyPrefab = Resources.Load<GameObject>(enemyData.prefabName);
