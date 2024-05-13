@@ -121,7 +121,7 @@ public class MainMenu : MonoBehaviour
 
                 found = true;
                 playerController.level = playerData.level;
-                playerController.health = playerData.health;
+                playerController.CurrentHealth = playerData.health;
                 Vector3 playerPosition = new Vector3(playerData.position[0], playerData.position[1], playerData.position[2]);
                 playerController.transform.position = playerPosition;
                 Vector3 cameraPosition = new Vector3(playerData.cameraPosition[0], playerData.cameraPosition[1], playerData.cameraPosition[2]);

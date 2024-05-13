@@ -60,6 +60,10 @@ public class ArrowLogic : MonoBehaviour
             other.transform.root.gameObject.GetComponent<HitColliderData>().PassInHit(other, arrowDamage * tension);
             StickArrowToEnemy(other.transform);
         }
+        else if(other.CompareTag("Player"))
+        {
+
+        }
         else
         {
             myBody.isKinematic = true;

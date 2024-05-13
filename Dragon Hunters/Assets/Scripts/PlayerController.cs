@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private const float AIM_PREPARE_DURATION = 4f; // second / n
     private const float AIM_WEIGHT = 0.5f;
     private const float IDLE_WEIGHT = 0.1f;
+    public HealthBar healthbar;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     [SerializeField] private CameraFollow cameraFollow;
     [SerializeField] private Animator playerAnimator;
@@ -82,6 +84,9 @@ public class PlayerController : MonoBehaviour
     public WaveSpawner waveSpawner;
     public List<GameObject> remainingEnemies;
     public List<GameObject> leftToSpawnEnemies;
+    public int CurrentHealth;
+    public FloatValue maxHealth;
+    public Canvas canvas;
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private enum AIMING_STATE
     {
@@ -101,6 +106,8 @@ public class PlayerController : MonoBehaviour
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
+        canvas.gameObject.SetActive(false);
+        maxHealth.value = 100;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         myRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<InputManager>();
@@ -111,6 +118,12 @@ public class PlayerController : MonoBehaviour
         loading = true;
         remainingEnemies = waveSpawner.spawnedEnemies;
         leftToSpawnEnemies = waveSpawner.enemiesToSpawn;
+        healthbar.SetMaxHealth(100);
+        if (CurrentHealth != healthbar.slider.value && CurrentHealth != 0)
+        {
+            
+            healthbar.ApplyDamage(Convert.ToInt32(maxHealth.value - CurrentHealth));
+        }
     }
    
     private void Update()
@@ -597,7 +610,22 @@ public class PlayerController : MonoBehaviour
 
 
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            if(other.gameObject.name.Replace("(Clone)", "") == "Red")
+            {
+                healthbar.ApplyDamage(10);
+                CurrentHealth = Convert.ToInt32(healthbar.slider.value);
+                if(CurrentHealth == 0)
+                {
+                    canvas.gameObject.SetActive(true);
+                }
+            }
+        }
+        
+    }
     private void UpdateRotation()
     {
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------

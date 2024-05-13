@@ -24,7 +24,7 @@ public class PlayerData
     {
         // Assign values for existing variables
         level = player.level;
-        health = player.health;
+        health = player.CurrentHealth;
         position = new float[3];
         position[0] = player.transform.position.x;
         position[1] = player.transform.position.y;
