@@ -21,6 +21,7 @@ public class HealthBar : MonoBehaviour
     }
     public void ApplyDamage(int value)
     {
+        Debug.Log("APPLYINAM :" + value);
         if ((slider.value - value) <= 0)
         {
             slider.value = 0;
@@ -33,5 +34,10 @@ public class HealthBar : MonoBehaviour
         fill.color = gradient.Evaluate(slider.normalizedValue);
 
     }
-    
+    public void SetHealth(float health)
+    {
+        slider.value = health;
+        fill.color = gradient.Evaluate(slider.normalizedValue);
+    }
+
 }

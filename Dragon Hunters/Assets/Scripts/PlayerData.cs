@@ -20,7 +20,7 @@ public class PlayerData
     public bool isBoxColliderTrigger;
 
     // Constructor with additional parameters
-    public PlayerData(PlayerController player, List<GameObject> remainingEnemies, List<GameObject> leftToSpawn, bool waveInProgress, bool boxColliderTrigger)
+    public PlayerData(PlayerController player, List<GameObject> remainingEnemies, List<GameObject> leftToSpawn, bool waveInProgress, bool boxColliderTrigger, List<float> healths)
     {
         // Assign values for existing variables
         level = player.level;
@@ -64,14 +64,26 @@ public class PlayerData
         // Update remaining enemies data
         if (remainingEnemies.Count > 0)
         {
-            foreach (GameObject enemy in remainingEnemies)
+
+
+
+            for (int i = 0; i < remainingEnemies.Count; i++)
             {
+                GameObject enemy = remainingEnemies[i];
+                
                 EnemyData enemyData = new EnemyData();
                 enemyData.prefabName = enemy.name.Replace("(Clone)", ""); // Save prefab name
                 enemyData.position = new float[3];
                 enemyData.position[0] = enemy.transform.position.x;
                 enemyData.position[1] = enemy.transform.position.y;
                 enemyData.position[2] = enemy.transform.position.z;
+                var enemyopa = enemy.GetComponent<Enemy>();
+
+                if(enemyopa != null)
+                {
+                    enemyData.health = enemyopa.healthBar.slider.value;
+                }
+                
                 remainingEnemiesData.Add(enemyData);
             }
         }

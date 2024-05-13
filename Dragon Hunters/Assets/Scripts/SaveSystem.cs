@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveSystem
 {
-    public static void SavePlayer(PlayerController player, List<GameObject> remainingEnemies, List<GameObject> leftToSpawn, bool wave, bool trigger)
+    public static void SavePlayer(PlayerController player, List<GameObject> remainingEnemies, List<GameObject> leftToSpawn, bool wave, bool trigger, List<float> healths)
     {
         Debug.Log("OOOOOOOOOOOOOOOOOOOOOOOOOOOO: " + leftToSpawn.Count);
         
@@ -13,7 +13,7 @@ public static class SaveSystem
         string path = Application.persistentDataPath + "/player.ba+";
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        PlayerData playerData = new PlayerData(player, remainingEnemies, leftToSpawn, wave, trigger);
+        PlayerData playerData = new PlayerData(player, remainingEnemies, leftToSpawn, wave, trigger, healths);
         Debug.Log("WAVE STATUSAS SAUGOJANT: " + playerData.isWaveInProgress);
         Debug.Log("COLLIDER STATUSAS SAUGOJANT: " + playerData.isBoxColliderTrigger);
         formatter.Serialize(stream, playerData);

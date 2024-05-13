@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class MainMenu : MonoBehaviour
     private PlayerController playerController;
     private bool found = false;
     private PlayerData playerData;
-
+    private List<GameObject> sikulikumako = new List<GameObject>();
+    
     public void PlayGame()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("STARTING");
@@ -27,13 +29,20 @@ public class MainMenu : MonoBehaviour
 
             // Create a list to store the alive enemies
             List<GameObject> aliveEnemies = new List<GameObject>();
-
+            List<float> healths = new List<float>();
             // Iterate through all enemies to check if they are still alive
             foreach (GameObject enemy in allEnemies)
             {
                 if (enemy != null) // If the enemy exists, add it to the list of alive enemies
                 {
                     aliveEnemies.Add(enemy);
+                    var enemyopa = enemy.GetComponent<Enemy>();
+                    if(enemyopa !=null)
+                    {
+                        healths.Add(enemyopa.healthBar.slider.value);
+                    }
+                    
+                    
                 }
             }
 
@@ -41,7 +50,7 @@ public class MainMenu : MonoBehaviour
             // Pass the current values of isWaveInProgress and isTrigger
             SaveSystem.SavePlayer(playerController, aliveEnemies, playerController.leftToSpawnEnemies,
                                   playerController.waveSpawner.cameraFollow.isWaveInProgress,
-                                  playerController.waveSpawner.boxCollider.enabled);
+                                  playerController.waveSpawner.boxCollider.enabled, healths);
         }
         else
         {
@@ -121,7 +130,7 @@ public class MainMenu : MonoBehaviour
                 GameObject[] existingEnemies = GameObject.FindGameObjectsWithTag("Enemy");
                 List<GameObject> blueDragon = new List<GameObject>();
                 Debug.Log("RAAAAAAAAAADOOOOOOOOOOOOOOOOOOOM TIEK:   " + existingEnemies.Length);
-                
+              
                 foreach (GameObject enemy in existingEnemies)
                 {
                     if(enemy.name.Contains("BlueDragon"))
@@ -154,7 +163,13 @@ public class MainMenu : MonoBehaviour
                     if (enemyPrefab != null)
                     {
                         GameObject enemy = Instantiate(enemyPrefab, new Vector3(enemyData.position[0], enemyData.position[1], enemyData.position[2]), Quaternion.identity);
-                        enemy.GetComponent<Enemy>().healthBar.slider.value = enemyData.health;
+                  
+                        // Get the HealthBar component of the instantiated enemy
+                        enemy.GetComponent<Enemy>().CurrentHealth = enemyData.health;
+                        
+                       
+                        
+
                     }
                     else
                     {
@@ -167,6 +182,10 @@ public class MainMenu : MonoBehaviour
         {
             Debug.LogError("Player object not found with tag: " + playerTag);
             found = false;
+        }
+        foreach(GameObject enemy in sikulikumako)
+        {
+            enemy.GetComponent<Enemy>().healthBar.ApplyDamage(30);
         }
     }
 

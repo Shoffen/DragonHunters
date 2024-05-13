@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AI;
 using UnityEngine;
+using System;
 
 public class Enemy : MonoBehaviour
 {
@@ -20,14 +21,21 @@ public class Enemy : MonoBehaviour
     public float movementSpeed;
     public bool playSound = false;
     private HitColliderData colliderData;
+    public float CurrentHealth;
+
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void Start()
     {
+        
         soundSystem = GameObject.Find("SoundSystem").GetComponent<SoundSystem>();
         playerTarget = GameObject.Find("Player").transform;
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         healthBar.SetMaxHealth(maxHealth.value);
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        if(CurrentHealth != healthBar.slider.value && CurrentHealth != 0)
+        {
+            healthBar.ApplyDamage(Convert.ToInt32(maxHealth.value - CurrentHealth));
+        }
     }
     public bool IsInRadiusToFollow()
     {
@@ -92,6 +100,7 @@ public class Enemy : MonoBehaviour
     }
     private void FixedUpdate()
     {
+       
         //--------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (!animator.GetBool("IsDead"))
         {
