@@ -612,19 +612,28 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Enemy"))
+        if(other.gameObject.name == "TailEnd")
         {
-            if(other.gameObject.name.Replace("(Clone)", "") == "Red")
+            healthbar.ApplyDamage(10);
+            other.gameObject.SetActive(false);
+            StartCoroutine(Activate(other.gameObject));
+            CurrentHealth = Convert.ToInt32(healthbar.slider.value);
+            if (CurrentHealth == 0)
             {
-                healthbar.ApplyDamage(10);
-                CurrentHealth = Convert.ToInt32(healthbar.slider.value);
-                if(CurrentHealth == 0)
-                {
-                    canvas.gameObject.SetActive(true);
-                }
+                canvas.gameObject.SetActive(true);
             }
         }
+       
         
+    }
+    private IEnumerator Activate(GameObject other)
+    {
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        yield return new WaitForSeconds(1 / 2f);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+        other.gameObject.SetActive(true);
+        //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     }
     private void UpdateRotation()
     {
