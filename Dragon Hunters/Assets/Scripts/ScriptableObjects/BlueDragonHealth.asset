@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83268992d3bc6441a8bf24db8fe65ae, type: 3}
   m_Name: BlueDragonHealth
   m_EditorClassIdentifier: 
-  value: 500
+  value: 100

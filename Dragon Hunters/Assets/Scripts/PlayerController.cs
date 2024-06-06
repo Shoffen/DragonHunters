@@ -612,6 +612,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject.name);
         if(other.gameObject.name == "TailEnd")
         {
             healthbar.ApplyDamage(10);
@@ -623,8 +624,20 @@ public class PlayerController : MonoBehaviour
                 canvas.gameObject.SetActive(true);
             }
         }
-       
-        
+        else if(other.gameObject.name == "R_Hand")
+        {
+            healthbar.ApplyDamage(20);
+            other.gameObject.SetActive(false);
+            StartCoroutine(Activate(other.gameObject));
+            CurrentHealth = Convert.ToInt32(healthbar.slider.value);
+            if (CurrentHealth == 0)
+            {
+                canvas.gameObject.SetActive(true);
+            }
+        }
+
+
+
     }
     private IEnumerator Activate(GameObject other)
     {
